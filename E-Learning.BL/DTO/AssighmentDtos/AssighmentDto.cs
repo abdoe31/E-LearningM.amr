@@ -9,6 +9,7 @@ namespace E_Learning.BL
 {
     public class AssighmentDto
     {
+        public int id {  get; set; }
         public string FilePath { get; set; } = null!;
         public string Header { get; set; } = null!;
         public string ModelAnswerFilePath { get; set; } = null!;
@@ -16,6 +17,16 @@ namespace E_Learning.BL
         public string? UpdatedBy { get; set; }
         public DateTime? Updatedat { get; set; }
         public virtual ICollection<UserAssighmenstDto>? UserAssighments { get; set; } = new List<UserAssighmenstDto>();
+
+    }
+
+
+    public class AssighmentDto2
+    {
+        public int id { get; set; }
+        public string Header { get; set; } = null!;
+        public string FilePath { get; set; } = null!;
+        public int? Classid { get; set; }
 
     }
 

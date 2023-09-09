@@ -24,7 +24,7 @@ namespace E_Learning.DAL
 
         public IEnumerable<Assighment>? GetAllAssighment()
         {
-            IEnumerable<Assighment>? x= _eLearningContext?.Assighments.Include(P => P.UserAssighments).ToList();
+            IEnumerable<Assighment>? x= _eLearningContext?.Assighments.ToList();
             return x;
         }
         
