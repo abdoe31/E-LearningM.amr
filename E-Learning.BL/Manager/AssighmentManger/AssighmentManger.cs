@@ -48,27 +48,19 @@ namespace E_Learning.BL
             
         }
 
-        public IEnumerable<AssighmentDto>? GetAllAssighment()
+        public IEnumerable<AssighmentDto2>? GetAllAssighment()
         {
             IEnumerable<Assighment> Assighmentlist= _Assighment.GetAllAssighment();
          
 
-            IEnumerable<AssighmentDto>? x = Assighmentlist?.Select(p => new AssighmentDto
+            IEnumerable<AssighmentDto2>? x = Assighmentlist?.Select(p => new AssighmentDto2
             {
 
+                id = p.Id,
                 FilePath = p.FilePath,
-                ModelAnswerFilePath = p.ModelAnswerFilePath,
                 Header = p.Header,
-                Updatedat = p.Updatedat,
-                UpdatedBy = p.UpdatedBy,
-                UserAssighments = p.UserAssighments?.Select(p => new UserAssighmenstDto
-                {
-                    Studentid = p.Studentid,
-                    UserAnswerFilePath = p.UserAnswerFilePath,
-                    Checked = p.Checked,
-                    Comment = p.Comment,
-                    Solved = p.Solved,
-                }).ToList(),
+                Classid = p.Classid,
+         
 
             });
             return x;
@@ -85,6 +77,7 @@ namespace E_Learning.BL
 
             return new AssighmentDto
             {
+                id= assighment.Id,
                 FilePath = assighment.FilePath,
                 ModelAnswerFilePath = assighment.FilePath,
                 Header = assighment.Header,

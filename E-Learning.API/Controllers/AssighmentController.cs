@@ -19,9 +19,9 @@ namespace E_Learning.API.Controllers
 
         [HttpGet]
         [Route("GetAllAssighment")]
-        public ActionResult<IEnumerable<AssighmentDto>> GetAllAssighment()
+        public ActionResult<IEnumerable<AssighmentDto2>> GetAllAssighment()
         {
-            IEnumerable<AssighmentDto> X = _Assighmenger.GetAllAssighment();
+            IEnumerable<AssighmentDto2> X = _Assighmenger.GetAllAssighment();
             if (X == null)
             {
                 return NotFound("empty");

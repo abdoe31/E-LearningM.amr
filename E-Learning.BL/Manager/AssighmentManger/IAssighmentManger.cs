@@ -9,7 +9,7 @@ namespace E_Learning.BL
     public interface IAssighmentManger
     {
 
-        IEnumerable<AssighmentDto>? GetAllAssighment();
+        IEnumerable<AssighmentDto2>? GetAllAssighment();
         AssighmentDto? GetAssighmentById(int id);
         bool AddAssigment(AssighmentDto assighment);
         bool RemoveAssigment(int assigmentId);
