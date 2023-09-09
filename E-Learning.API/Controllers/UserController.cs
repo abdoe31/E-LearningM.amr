@@ -227,7 +227,11 @@ namespace E_Learning.API.Controllers
             {
                 return NotFound("user not found!!!");
             }
+            if (user.Pasword != changePassoworddto.Oldpassword)
+            {
 
+                return BadRequest("Wrong OldPassword ");
+            }
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var result = await _userManager.ResetPasswordAsync(user, token, changePassoworddto.Newpassword);
