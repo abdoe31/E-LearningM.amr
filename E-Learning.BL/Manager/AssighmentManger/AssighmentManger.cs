@@ -17,14 +17,13 @@ namespace E_Learning.BL
             _Assighment = Assighment;
 
         }
-        public bool AddAssigment(AssighmentDto assighment)
+        public bool AddAssigment(AssighmentAddDto assighment)
         {
             Assighment assighment1 = new Assighment();
             assighment1.FilePath = assighment.FilePath; 
             assighment1.ModelAnswerFilePath = assighment.ModelAnswerFilePath;
             assighment1.Header = assighment.Header;
-            assighment1.Updatedat = assighment.Updatedat;
-            assighment1.UpdatedBy = assighment.UpdatedBy;
+            assighment1.Classid = assighment.Classid;
             _Assighment.AddAssigment(assighment1);
             _Assighment.SaveChanges();
 
@@ -125,11 +124,13 @@ namespace E_Learning.BL
             return changeListMapUser;
         }
 
-        public bool RemoveAssigment(int assigmentId)
+        public bool RemoveAssigment(Deletedto assigmentId)
         {
-             
-              if(_Assighment.RemoveAssigment(assigmentId))
+            Assighment? assighment = _Assighment.GetAssigmentById(assigmentId.id);
+
+            if (assighment !=null && assighment.Header ==assigmentId.name)
             {
+                _Assighment.RemoveAssigment(assigmentId.id);
                 _Assighment.SaveChanges();
                 return true;
 

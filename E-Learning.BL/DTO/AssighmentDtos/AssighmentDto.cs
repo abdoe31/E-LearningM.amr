@@ -19,6 +19,16 @@ namespace E_Learning.BL
         public virtual ICollection<UserAssighmenstDto>? UserAssighments { get; set; } = new List<UserAssighmenstDto>();
 
     }
+    public class AssighmentAddDto
+    {
+        public string FilePath { get; set; } = null!;
+        public string Header { get; set; } = null!;
+        public string ModelAnswerFilePath { get; set; } = null!;
+        public int? Classid { get; set; }
+  
+
+    }
+
 
 
     public class AssighmentDto2

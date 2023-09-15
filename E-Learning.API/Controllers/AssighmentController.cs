@@ -93,7 +93,7 @@ namespace E_Learning.API.Controllers
 
         [HttpPost]
         [Route("AddAssihgment")]
-        public ActionResult AddAssihgment(AssighmentDto assighment)
+        public ActionResult AddAssihgment(AssighmentAddDto assighment)
         {
 
             if (!ModelState.IsValid)
@@ -122,14 +122,14 @@ namespace E_Learning.API.Controllers
         [HttpDelete]
         [Route(template: "DeleteAssigment")]
 
-        public ActionResult DeleteAssigment(int id)
+        public ActionResult DeleteAssigment(Deletedto obj)
         {
-           if( _Assighmenger.RemoveAssigment(id))
+           if( _Assighmenger.RemoveAssigment(obj))
             {
                 return Ok();
 
             }
-            return BadRequest("cant find assigment");
+            return BadRequest("cant find assigment Check Data");
         }
 
         [HttpPost]
