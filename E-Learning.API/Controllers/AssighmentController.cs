@@ -134,7 +134,6 @@ namespace E_Learning.API.Controllers
 
         [HttpPost]
         [Route("AddUserAssihgment")]
-        [Authorize(Roles = "Student")]
 
         public ActionResult<AddUserAssighmenstDto> AddUserAssihgment(AddUserAssighmenstDto assighment)
         {
