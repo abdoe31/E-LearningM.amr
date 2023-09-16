@@ -136,7 +136,7 @@ namespace E_Learning.API.Controllers
         [Route("AddUserAssihgment")]
         [Authorize(Roles = "Student")]
 
-        public ActionResult<AddUserAssighmenstDto> AddUserAssihgment([FromForm ]AddUserAssighmenstDto assighment)
+        public ActionResult<AddUserAssighmenstDto> AddUserAssihgment(AddUserAssighmenstDto assighment)
         {
 
             if (!ModelState.IsValid)
