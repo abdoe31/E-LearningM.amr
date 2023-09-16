@@ -16,7 +16,7 @@ namespace E_Learning.API.Controllers
             _Classmanger = Classmanger;
         }
 
-        [HttpGet("GetClassByYear")]
+        [HttpGet("GetClassByYear/{yearid}")]
         public IActionResult GetClassByYear(int yearid) {
         
         if (yearid == 0)
@@ -99,7 +99,7 @@ namespace E_Learning.API.Controllers
         }
 
 
-        [HttpDelete("DeleteUserFromClass")]
+        [HttpPost("DeleteUserFromClass")]
         public IActionResult DeleteUserFromClass(AddClassRequistDto addClassRequistDto)
         {
             if (addClassRequistDto is null)
