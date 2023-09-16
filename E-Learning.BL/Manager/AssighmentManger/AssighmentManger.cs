@@ -90,6 +90,9 @@ namespace E_Learning.BL
                     Checked = p.Checked,
                     Comment = p.Comment,
                     Solved = p.Solved,
+                    Assighmentid=p.Assighmentid,
+                    StudentName= (p.Student.FirstName + p.Student.LastName + p.Student.LastName),
+                    StudentNumber= p.Student.PhoneNumber
                 }).ToList(),
 
             };

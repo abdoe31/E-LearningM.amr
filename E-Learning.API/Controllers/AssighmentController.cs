@@ -172,9 +172,9 @@ namespace E_Learning.API.Controllers
 
         [HttpPut]
         [Route(template: "CorrectUserAss")]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
 
-        public ActionResult CorrectUserAss([FromForm]EditUserAssighment assighment)
+        public ActionResult CorrectUserAss(EditUserAssighment assighment)
         {
             if (!ModelState.IsValid)
             {

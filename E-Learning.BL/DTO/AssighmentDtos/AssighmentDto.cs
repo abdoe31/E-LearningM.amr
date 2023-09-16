@@ -45,6 +45,10 @@ namespace E_Learning.BL
     public class UserAssighmenstDto
     {
         public string Studentid { get; set; }
+        public string StudentName { get; set; }
+        public string StudentNumber { get; set; }
+
+        public int? Assighmentid { get; set; }
         public string? Comment { get; set; }
         public bool? Solved { get; set; } = false;
         public bool? Checked { get; set; } = false;
