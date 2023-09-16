@@ -4,6 +4,7 @@ using System.Security.AccessControl;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -96,8 +97,16 @@ var app = builder.Build();
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+#region File Handeling
+var staticFilesPath = Path.Combine(Environment.CurrentDirectory, "Files");
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(staticFilesPath),
+    RequestPath = "/Files"
 
-            app.UseHttpsRedirection();
+});
+#endregion
+app.UseHttpsRedirection();
 
             app.UseAuthorization();
 app.UseCors("AllowAll");

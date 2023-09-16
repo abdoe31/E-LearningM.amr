@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>E_Learning.API</RootNamespace>
   </PropertyGroup>
@@ -30,6 +30,10 @@
   <ItemGroup>
     <ProjectReference Include="..\E-Learning.BL\E-Learning.BL.csproj" />
     <ProjectReference Include="..\E-Learning.DAL\E-Learning.DAL.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Files\" />
   </ItemGroup>
 
 </Project>

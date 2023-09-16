@@ -17,6 +17,51 @@ namespace E_Learning.API.Controllers
             _Assighmenger = Assighmenger;
         }
 
+        [HttpPost]
+        public ActionResult<UploadFileResultDto> Upload(IFormFile file)
+        {
+            var extension = Path.GetExtension(file.FileName);
+
+            var allowedExtension = new string[]
+            {
+                ".png",
+                ".jpg",
+                ".avg",
+                ".webp",
+                ".jpeg" , ".pdf"
+            };
+
+            bool isAllowedExtension = allowedExtension.Contains(extension, StringComparer.InvariantCultureIgnoreCase);
+
+            if (!isAllowedExtension)
+            {
+                return BadRequest(new UploadFileResultDto(false, "is not valid", " "));
+            }
+
+
+            bool isSizedAllowed = file.Length is > 0 and <= 5_000_000;
+
+            if (!isAllowedExtension)
+            {
+                return BadRequest(new UploadFileResultDto(false, "is not valid", " "));
+            }
+
+
+            var newFileNmae = $"{Guid.NewGuid()}{extension}";
+
+            var imagesPath = Path.Combine(Environment.CurrentDirectory, "Files");
+
+            var fulFilePath = Path.Combine(imagesPath, newFileNmae);
+
+            using var stream = new FileStream(fulFilePath, FileMode.Create);
+            file.CopyTo(stream);
+
+            //D:\dot net iti\finalprojectititbackend\Airbnb\Airbnb.API\Images\
+            var url = $"{Request.Scheme}://{Request.Host}/Files/{newFileNmae}";
+            return new UploadFileResultDto(true, "Suceess", url);
+        }
+
+
         [HttpGet]
         [Route("GetAllAssighment")]
         public ActionResult<IEnumerable<AssighmentDto2>> GetAllAssighment()
@@ -48,7 +93,7 @@ namespace E_Learning.API.Controllers
 
         [HttpPost]
         [Route("AddAssihgment")]
-        public ActionResult AddAssihgment(AssighmentDto assighment)
+        public ActionResult AddAssihgment(AssighmentAddDto assighment)
         {
 
             if (!ModelState.IsValid)
@@ -77,14 +122,14 @@ namespace E_Learning.API.Controllers
         [HttpDelete]
         [Route(template: "DeleteAssigment")]
 
-        public ActionResult DeleteAssigment(int id)
+        public ActionResult DeleteAssigment(Deletedto obj)
         {
-           if( _Assighmenger.RemoveAssigment(id))
+           if( _Assighmenger.RemoveAssigment(obj))
             {
                 return Ok();
 
             }
-            return BadRequest("cant find assigment");
+            return BadRequest("cant find assigment Check Data");
         }
 
         [HttpPost]
@@ -127,9 +172,9 @@ namespace E_Learning.API.Controllers
 
         [HttpPut]
         [Route(template: "CorrectUserAss")]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
 
-        public ActionResult CorrectUserAss([FromForm]EditUserAssighment assighment)
+        public ActionResult CorrectUserAss(EditUserAssighment assighment)
         {
             if (!ModelState.IsValid)
             {

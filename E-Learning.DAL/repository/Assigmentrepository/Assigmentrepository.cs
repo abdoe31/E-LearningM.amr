@@ -30,7 +30,7 @@ namespace E_Learning.DAL
         
         public Assighment? GetAssigmentById(int id)
         {
-            Assighment? x = _eLearningContext?.Assighments?.Include(P => P.UserAssighments).Where(B => B.Id == id).FirstOrDefault();
+            Assighment? x = _eLearningContext?.Assighments?.Include(P => P.UserAssighments).ThenInclude(p=>p.Student).Where(B => B.Id == id).FirstOrDefault();
             return x;
         }
 

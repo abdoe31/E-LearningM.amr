@@ -11,8 +11,8 @@ namespace E_Learning.BL
 
         IEnumerable<AssighmentDto2>? GetAllAssighment();
         AssighmentDto? GetAssighmentById(int id);
-        bool AddAssigment(AssighmentDto assighment);
-        bool RemoveAssigment(int assigmentId);
+        bool AddAssigment(AssighmentAddDto assighment);
+        bool RemoveAssigment(Deletedto assigmentId);
         bool UpdateAssigment(EditAssighmentDto editAssighment);
         bool AddUserAssighment(AddUserAssighmenstDto userAssighment);  
         IEnumerable<ReadUserAssighment> ReadUserAssighmentsByUserId(string UserId);
