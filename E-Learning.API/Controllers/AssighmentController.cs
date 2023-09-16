@@ -151,7 +151,6 @@ namespace E_Learning.API.Controllers
 
         [HttpGet]
         [Route("GetUserAssighmentsByUserId")]
-        [Authorize(Roles = "Student")]
 
         public ActionResult GetUserAssighmentsByUserId(string UserId)
         {
