@@ -7,42 +7,35 @@ namespace E_Learning.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class QuizController : ControllerBase
+    public class ClassController : ControllerBase
     {
-        private readonly IQuizManger _quizManger;
+        private readonly IClassManger _Classmanger;
 
-        public QuizController(IQuizManger quizManger)
+        public ClassController(IClassManger Classmanger )
         {
-            _quizManger = quizManger;
-        }
-        public IActionResult AddQuiz(AddquizDto addquizDto)
-        {
-
-            return Ok (_quizManger.AddQuiz(addquizDto));
-
-        }
-        public IActionResult AddQuestion(AddquestionDto addquistionDto)
-        {
-            return Ok(_quizManger.AddQuestion(addquistionDto));
-
-
-        }
-        public IActionResult AddAnswer(AddAnswerdto addAnswerdto)
-        {
-            return Ok(_quizManger.AddAnswer(addAnswerdto));
+            _Classmanger = Classmanger;
         }
 
-        public IActionResult UpdateQuestion(UpdatequestionDto addquistionDto)
-        {
-            return Ok(_quizManger.UpdateQuestion(addquistionDto));
+        [HttpGet("GetClassByYear/{yearid}")]
+        public IActionResult GetClassByYear(int yearid) {
+        
+        if (yearid == 0)
+            {
 
+                return BadRequest();
+            }
+     return Ok(  _Classmanger.GetAllByYear(yearid));
+
+        
 
         }
 
-        public ActionResult<GetQustionWithAnswersDto> GetQustionWithAnswers(int Quizid)
+        [HttpGet("GetAllYers")]
+        public IActionResult GetAllYers()
         {
-            return _quizManger.GetQustionWithAnswers(Quizid);
 
+            
+            return Ok(_Classmanger.GetAllYears());
 
 
         }
@@ -50,8 +43,82 @@ namespace E_Learning.API.Controllers
 
 
 
+        [HttpGet("GetAllClasses")]
+        public IActionResult GetAllClasses( )
+        {
+
+            
+            return Ok(_Classmanger.GetAll());
 
 
+
+        }
+
+
+        [HttpGet("GetAllClassesRequists")]
+        public IActionResult GetAllClassesRequists( int classid)
+        {
+
+
+            return Ok(_Classmanger.GetAllClassesRequists(classid));
+
+
+
+        }
+
+
+
+        [HttpPost("AcceptDeclineClassrequest")]
+        public IActionResult AcceptDeclineClassrequest(List<ClassRequistStatueDto> classRequistStatueDtos)
+        {
+            if (classRequistStatueDtos.IsNullOrEmpty())
+            {
+
+                return BadRequest();
+            }
+
+            return Ok(_Classmanger.ClassRequistStatue(classRequistStatueDtos));
+
+
+
+        }
+
+        [HttpPost("AddClassrequest")]
+        public IActionResult AddClassrequest(AddClassRequistDto  addClassRequistDto)
+        {
+            if (addClassRequistDto is null)
+            {
+
+                return BadRequest();
+            }
+
+            return Ok(_Classmanger.AddClassRequist(addClassRequistDto));
+
+
+
+        }
+
+
+        [HttpPost("DeleteUserFromClass")]
+        public IActionResult DeleteUserFromClass(AddClassRequistDto addClassRequistDto)
+        {
+            if (addClassRequistDto is null)
+            {
+
+                return BadRequest();
+            }
+
+            return Ok(_Classmanger.DeleteUserFromClass(addClassRequistDto));
+
+
+
+        }
+
+
+
+        
+
+               
 
     }
 }
