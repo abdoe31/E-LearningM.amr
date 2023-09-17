@@ -14,15 +14,13 @@ namespace E_Learning.API.Controllers
         private readonly IAssighmentManger _Assighmenger;
         private readonly ELearningContext eLearningContext;
 
-        public AssighmentController(IAssighmentManger Assighmenger)
+        public AssighmentController(IAssighmentManger Assighmenger, ELearningContext eLearningContext)
         {
             _Assighmenger = Assighmenger;
-        }
-
-        public AssighmentController(IAssighmentManger assighmenger, ELearningContext eLearningContext) : this(assighmenger)
-        {
             this.eLearningContext = eLearningContext;
         }
+
+   
 
         [HttpPost]
         public ActionResult<UploadFileResultDto> Upload(IFormFile file)
