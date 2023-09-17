@@ -1,4 +1,5 @@
 ﻿using E_Learning.BL;
+using E_Learning.DAL;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,10 +12,16 @@ namespace E_Learning.API.Controllers
     public class AssighmentController : ControllerBase
     {
         private readonly IAssighmentManger _Assighmenger;
+        private readonly ELearningContext eLearningContext;
 
         public AssighmentController(IAssighmentManger Assighmenger)
         {
             _Assighmenger = Assighmenger;
+        }
+
+        public AssighmentController(IAssighmentManger assighmenger, ELearningContext eLearningContext) : this(assighmenger)
+        {
+            this.eLearningContext = eLearningContext;
         }
 
         [HttpPost]
@@ -186,6 +193,20 @@ namespace E_Learning.API.Controllers
 
 
         }
+
+
+        [HttpGet("GetAllAssighmentsByClass")]
+
+        public ActionResult<List<Selectdto>> GetAllAssighmentsByClass(int Classid)
+        {
+
+            var Assighments = eLearningContext.Assighments.Where(x => x.Classid == Classid).Select(x => new Selectdto { id = x.Id, name = x.Header }).ToList();
+            return Assighments;
+
+
+
+        }
+
 
     }
 }
