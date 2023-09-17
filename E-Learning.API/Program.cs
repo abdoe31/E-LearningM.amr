@@ -76,10 +76,11 @@ builder.Services.AddScoped<ILecturerepository, Lecturerepository>();
 builder.Services.AddScoped<IAssigmentrepository, Assigmentrepository>();
 builder.Services.AddScoped<IUserLecturerepository, UserLecturerepository>();
 
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>(); 
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 
 //mangers 
+builder.Services.AddScoped<IQuizManger, QuizManger>();
 
 builder.Services.AddScoped<IUserManger, UserManger>();
 builder.Services.AddScoped<IClassManger, ClassManger>();

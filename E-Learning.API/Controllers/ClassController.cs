@@ -7,108 +7,41 @@ namespace E_Learning.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ClassController : ControllerBase
+    public class QuizController : ControllerBase
     {
-        private readonly IClassManger _Classmanger;
+        private readonly IQuizManger _quizManger;
 
-        public ClassController(IClassManger Classmanger )
+        public QuizController(IQuizManger quizManger)
         {
-            _Classmanger = Classmanger;
+            _quizManger = quizManger;
         }
-
-        [HttpGet("GetClassByYear/{yearid}")]
-        public IActionResult GetClassByYear(int yearid) {
-        
-        if (yearid == 0)
-            {
-
-                return BadRequest();
-            }
-     return Ok(  _Classmanger.GetAllByYear(yearid));
-
-        
-
-        }
-
-        [HttpGet("GetAllYers")]
-        public IActionResult GetAllYers()
+        public IActionResult AddQuiz(AddquizDto addquizDto)
         {
 
-            
-            return Ok(_Classmanger.GetAllYears());
-
+            return Ok (_quizManger.AddQuiz(addquizDto));
 
         }
-
-
-
-
-        [HttpGet("GetAllClasses")]
-        public IActionResult GetAllClasses( )
+        public IActionResult AddQuestion(AddquestionDto addquistionDto)
         {
-
-            
-            return Ok(_Classmanger.GetAll());
-
+            return Ok(_quizManger.AddQuestion(addquistionDto));
 
 
         }
-
-
-        [HttpGet("GetAllClassesRequists")]
-        public IActionResult GetAllClassesRequists( int classid)
+        public IActionResult AddAnswer(AddAnswerdto addAnswerdto)
         {
-
-
-            return Ok(_Classmanger.GetAllClassesRequists(classid));
-
-
-
+            return Ok(_quizManger.AddAnswer(addAnswerdto));
         }
 
-
-
-        [HttpPost("AcceptDeclineClassrequest")]
-        public IActionResult AcceptDeclineClassrequest(List<ClassRequistStatueDto> classRequistStatueDtos)
+        public IActionResult UpdateQuestion(UpdatequestionDto addquistionDto)
         {
-            if (classRequistStatueDtos.IsNullOrEmpty())
-            {
-
-                return BadRequest();
-            }
-
-            return Ok(_Classmanger.ClassRequistStatue(classRequistStatueDtos));
-
+            return Ok(_quizManger.UpdateQuestion(addquistionDto));
 
 
         }
 
-        [HttpPost("AddClassrequest")]
-        public IActionResult AddClassrequest(AddClassRequistDto  addClassRequistDto)
+        public ActionResult<GetQustionWithAnswersDto> GetQustionWithAnswers(int Quizid)
         {
-            if (addClassRequistDto is null)
-            {
-
-                return BadRequest();
-            }
-
-            return Ok(_Classmanger.AddClassRequist(addClassRequistDto));
-
-
-
-        }
-
-
-        [HttpPost("DeleteUserFromClass")]
-        public IActionResult DeleteUserFromClass(AddClassRequistDto addClassRequistDto)
-        {
-            if (addClassRequistDto is null)
-            {
-
-                return BadRequest();
-            }
-
-            return Ok(_Classmanger.DeleteUserFromClass(addClassRequistDto));
+            return _quizManger.GetQustionWithAnswers(Quizid);
 
 
 
@@ -116,9 +49,9 @@ namespace E_Learning.API.Controllers
 
 
 
-        
 
-               
+
+
 
     }
 }
