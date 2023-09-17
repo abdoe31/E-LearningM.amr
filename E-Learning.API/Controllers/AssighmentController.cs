@@ -138,7 +138,7 @@ namespace E_Learning.API.Controllers
         public ActionResult<AddUserAssighmenstDto> AddUserAssihgment(AddUserAssighmenstDto assighment)
         {
 
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid || assighment.UserAnswerFilePath=="string")
             {
                 return BadRequest("model not correct!!!");
             }
