@@ -13,6 +13,8 @@ namespace E_Learning.API.Controllers
         private readonly IQuizManger _quizManger;
         private readonly ELearningContext  eLearningContext;
 
+
+
         public QuizController(IQuizManger quizManger, ELearningContext eLearningContext)
         {
             _quizManger = quizManger;
@@ -42,14 +44,23 @@ namespace E_Learning.API.Controllers
 
         }
 
-        public ActionResult<GetQustionWithAnswersDto> GetQustionWithAnswers(int Quizid)
+       // public ActionResult<GetQustionWithAnswersDto> GetQustionWithAnswers(int Quizid)
+      //  {
+      //      return _quizManger.GetQustionWithAnswers(Quizid);
+
+
+
+    //    }
+
+        public ActionResult<List<Selectdto>> GetAllQuizsByClass(int Classid)
         {
-            return _quizManger.GetQustionWithAnswers(Quizid);
+
+          var quizs =  eLearningContext.Quizes.Where(x=>x.Classid==Classid).Select(x=> new Selectdto {  id=x.Id, name=x.Header}).ToList();
+            return quizs;
 
 
 
         }
-
 
 
 
