@@ -20,22 +20,30 @@ namespace E_Learning.API.Controllers
             _quizManger = quizManger;
             this.eLearningContext = eLearningContext;
         }
+
+        [HttpPost("AddQuiz")]
         public IActionResult AddQuiz(AddquizDto addquizDto)
         {
 
             return Ok (_quizManger.AddQuiz(addquizDto));
 
         }
+        [HttpPost("AddQuestion")]
+
         public IActionResult AddQuestion(AddquestionDto addquistionDto)
         {
             return Ok(_quizManger.AddQuestion(addquistionDto));
 
 
         }
+
+        [HttpPost("AddAnswer")]
+
         public IActionResult AddAnswer(AddAnswerdto addAnswerdto)
         {
             return Ok(_quizManger.AddAnswer(addAnswerdto));
         }
+        [HttpPut("UpdateQuestion")]
 
         public IActionResult UpdateQuestion(UpdatequestionDto addquistionDto)
         {
@@ -44,13 +52,14 @@ namespace E_Learning.API.Controllers
 
         }
 
-       // public ActionResult<GetQustionWithAnswersDto> GetQustionWithAnswers(int Quizid)
-      //  {
-      //      return _quizManger.GetQustionWithAnswers(Quizid);
+        // public ActionResult<GetQustionWithAnswersDto> GetQustionWithAnswers(int Quizid)
+        //  {
+        //      return _quizManger.GetQustionWithAnswers(Quizid);
 
 
 
-    //    }
+        //    }
+        [HttpGet("GetAllQuizsByClass")]
 
         public ActionResult<List<Selectdto>> GetAllQuizsByClass(int Classid)
         {
