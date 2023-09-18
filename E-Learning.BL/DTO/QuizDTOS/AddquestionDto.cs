@@ -1,4 +1,5 @@
-﻿using System;
+﻿using E_Learning.DAL;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,7 @@ namespace E_Learning.BL
     public class AddquestionDto
     {
         public string? Header { get; set; }
-        public string? Type { get; set; }
+        public QuestionType? Type { get; set; }
         public int? QuizId { get; set; }
         public List <answerDTO> answerDTOs { get; set; } = new List <answerDTO> ();
     }

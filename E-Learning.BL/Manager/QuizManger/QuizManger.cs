@@ -173,7 +173,7 @@ public class QuizManger : IQuizManger
             {
                 Quizid = x.QuizId,
                 QuestionID = x.Id,
-                QuestionHeader = x.Header,
+                QuestionHeader = x.Header, questionType= x.Type,
 
 
 

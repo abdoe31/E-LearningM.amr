@@ -16,7 +16,7 @@ public partial class Question
 
     public int? QuizId { get; set; }
     public int? Answerid { get; set; }
-    public string? Type { get; set; }
+    public QuestionType? Type { get; set; }
 
     public string? UpdatedBy { get; set; }
 
@@ -27,4 +27,8 @@ public partial class Question
     public virtual Quize? Quiz { get; set; }
 
     public virtual ICollection<UserAnswer> UserAnswers { get; set; } = new List<UserAnswer>();
+}
+public enum    QuestionType
+{
+    text , Image
 }

@@ -20,6 +20,7 @@ public class GetQuestionsDto
 {
     public int? Quizid { get; set; }
     public int? QuestionID { get; set; }
+    public  QuestionType?   questionType { get; set; }
 
     public string? QuestionHeader { get; set; }
 
