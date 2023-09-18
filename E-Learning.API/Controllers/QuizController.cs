@@ -52,13 +52,6 @@ namespace E_Learning.API.Controllers
 
         }
 
-        // public ActionResult<GetQustionWithAnswersDto> GetQustionWithAnswers(int Quizid)
-        //  {
-        //      return _quizManger.GetQustionWithAnswers(Quizid);
-
-
-
-        //    }
         [HttpGet("GetAllQuizsByClass")]
 
         public ActionResult<List<Selectdto>> GetAllQuizsByClass(int Classid)
@@ -75,6 +68,16 @@ namespace E_Learning.API.Controllers
 
 
 
+
+        [HttpGet("GetAllQAByQuiz/{id}")]
+
+        public ActionResult<GetQustionWithAnswersDto> GetAllQAByQuiz(int Quizid)
+        {
+            return _quizManger.GetQustionWithAnswers(Quizid);
+
+
+
+        }
 
     }
 }

@@ -155,8 +155,33 @@ public class QuizManger : IQuizManger
 
     public GetQustionWithAnswersDto GetQustionWithAnswers(int Quizid)
     {
-        return null;
+    var quiz =     _eLearningContext.Quizes.Where(x => x.Id == Quizid).Include(x => x.Questions).ThenInclude(x => x.Answers).Include(x => x.Questions).ThenInclude(x => x.RightAnswer).FirstOrDefault();
 
+        if (quiz == null)
+        {
+            return null;
+        }
+        var getQuiz = new GetQustionWithAnswersDto
+        {
+            Quizid = quiz.Id,
+            QuizHeader = quiz.Header,
+            QuizType = quiz.quizType
+
+
+        ,
+            getQuestionsDtos = quiz.Questions.Select(x => new GetQuestionsDto
+            {
+                Quizid = x.QuizId,
+                QuestionID = x.Id,
+                QuestionHeader = x.Header,
+
+
+
+                getAnswersDtos = x.Answers.Select(y => new GetAnswersDto { AnswerID = y.Id, Header = y.Header, QuestionID = x.Id, Right = x.RightAnswerid == y.Id ? true : false }).ToList()
+            }).ToList()
+        };
+
+        return getQuiz;
     }
 
 
