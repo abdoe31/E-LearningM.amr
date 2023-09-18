@@ -33,7 +33,7 @@ public class QuizManger : IQuizManger
         }
         var quiz = new Quize { Header = addquizDto.Header, StartTime = addquizDto.StartTime, EndTime = addquizDto.EndTime
 
-        , quizType = addquizDto.quizType, Duration = addquizDto.Duration,
+        , quizType = addquizDto.quizType, Duration = addquizDto.Duration,Classid=addquizDto.Classid
         };
 
         _eLearningContext.Quizes.Add(quiz);
