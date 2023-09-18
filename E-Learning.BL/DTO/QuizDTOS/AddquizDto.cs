@@ -11,7 +11,7 @@ namespace E_Learning.BL
     {
        public  string? Header {  get; set; }
         public DateTime? StartTime { get; set; }
-
+        public int? Classid { get; set; }
         public DateTime? EndTime { get; set; }
         public int? Duration { get; set; }
         public QuizType quizType { get; set; }
