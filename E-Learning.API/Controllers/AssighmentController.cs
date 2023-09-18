@@ -198,7 +198,7 @@ namespace E_Learning.API.Controllers
         public ActionResult<List<Selectdto>> GetAllAssighmentsByClass(int Classid)
         {
 
-            var Assighments = eLearningContext.Assighments.Where(x => x.Classid == Classid).Select(x => new Selectdto { id = x.Id, name = x.Header }).ToList();
+            var Assighments = eLearningContext.Assighments.Where(x => x.Classid == Classid).Select(x => new Selectdto { id = x.Id, name = x.Header ,FilePath=x.FilePath}).ToList();
             return Assighments;
 
 
