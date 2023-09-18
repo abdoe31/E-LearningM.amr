@@ -71,9 +71,9 @@ namespace E_Learning.API.Controllers
 
         [HttpGet("GetAllQAByQuiz/{id}")]
 
-        public ActionResult<GetQustionWithAnswersDto> GetAllQAByQuiz(int Quizid)
+        public ActionResult<GetQustionWithAnswersDto> GetAllQAByQuiz(int id)
         {
-            return _quizManger.GetQustionWithAnswers(Quizid);
+            return _quizManger.GetQustionWithAnswers(id);
 
 
 
