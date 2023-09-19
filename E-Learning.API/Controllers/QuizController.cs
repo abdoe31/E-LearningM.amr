@@ -80,7 +80,7 @@ namespace E_Learning.API.Controllers
 
         }
 
-        [HttpPost("GetAllQAByQuiz/{Quizid}")]
+        [HttpPost("StudentSolveQuiz")]
 
         public IActionResult StudentSolveQuiz( SolveQuizDto solveQuizDto )
         
