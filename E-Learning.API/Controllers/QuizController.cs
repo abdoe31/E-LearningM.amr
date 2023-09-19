@@ -223,7 +223,7 @@ List<UserAnswer> userAnswers = new List<UserAnswer>();
 
 
 
-        [HttpGet("GetQuizToSolve")]
+        [HttpPost("GetQuizToSolve")]
         public IActionResult GetQuizToSolve(checkquizSolved checkquizSolved)
         {
             var quiz = eLearningContext.Quizes.Where(x => x.Id == checkquizSolved.quizid).Include(x => x.UserQuizzes).ThenInclude(x=>x.UserAnswers).FirstOrDefault();
@@ -257,6 +257,16 @@ List<UserAnswer> userAnswers = new List<UserAnswer>();
             return Ok(new { start = UserQuiz.Start, end = UserQuiz.End  , quiestions = _quizManger.GetQustionWithAnswers(checkquizSolved.quizid) });
 
         }
+   
+    
+    
+    
+    
+    
+    
+    
+    
+    
     }
 
 
