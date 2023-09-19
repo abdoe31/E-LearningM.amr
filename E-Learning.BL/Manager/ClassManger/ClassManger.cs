@@ -36,7 +36,7 @@ namespace E_Learning.BL
 
             var clas = _UnitOfWork.classrepository.getbyid(Classid);
 
-            var userrequset =  _UnitOfWork.classrepository.GetUserClassRequists(Classid).Select(x => new GetUserCLassRequistsdto { classid = (int)x.Classid, Userid = x.Userid,  UserName = $" {x.user.FirstName}  {x.user.SecondName}  {x.user.LastName}" }).ToList();
+            var userrequset =  _UnitOfWork.classrepository.GetUserClassRequists(Classid).Select(x => new GetUserCLassRequistsdto { classid = (int)x.Classid, Userid = x.Userid,  UserName= x.user.UserName, PhoneNumber= x.user.PhoneNumber, ParentPhoneNumber=x.user.StudentPhoneNumber, Name = $" {x.user.FirstName}  {x.user.SecondName}  {x.user.LastName}" }).ToList();
             return new GetCLassdto { ClassName = clas.Name, getUserCLassRequistsdtos = userrequset };
         
         
