@@ -107,10 +107,70 @@ List<UserAnswer> userAnswers = new List<UserAnswer>();
             var states = eLearningContext.SaveChanges();
             return Ok(new {  UserGrade= userquiz.Grade, colEfected= states });
         }
+
+        [HttpDelete("DeleteAnswer/{id}") ]
+
+        public IActionResult DeleteAnswer(int id)
+        {
+       var useranswer =      eLearningContext.UserAnswers.Where(x => x.Answerid == id)
+                ;
+
+            eLearningContext.RemoveRange(useranswer);
+            var answer = eLearningContext.Answers.Where(x => x.Id == id).Include(x => x.Question).FirstOrDefault();
+            if (answer.Id == answer.Question.RightAnswerid)
+            {
+
+
+                answer.Question.RightAnswerid = null;
+            }
+            eLearningContext.Remove(answer);
+
+            return  Ok (eLearningContext.SaveChanges());
+
+
+        }
+
+
+        [HttpDelete("DeleteQuestion/{id}")]
+
+        public IActionResult DeleteQuestion(int id)
+        {
+            var useranswer = eLearningContext.UserAnswers.Where(x => x.QuestionId == id)
+                     ;
+
+            eLearningContext.RemoveRange(useranswer);
+            var question = eLearningContext.Questions.Where(x => x.Id == id).FirstOrDefault();
+            question.RightAnswerid = null;
+            question.RightAnswer = null;
+
+            eLearningContext.Remove(question);
+
+            return Ok(eLearningContext.SaveChanges());
+
+
+        }
+
+
+
     
-    
+    public IActionResult DeleteQuiz(int id)
+        {
+
+
+            var quiz = eLearningContext.Quizes.Where(x => x.Id == id).FirstOrDefault();
+            eLearningContext.Quizes.Remove(quiz);
+            return (Ok(eLearningContext.SaveChanges()));
+
+
+          }
+
 
 
 
     }
+
+
+
+
+
 }

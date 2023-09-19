@@ -142,8 +142,6 @@ public class QuizManger : IQuizManger
                 }
                 _eLearningContext.Answers.Update(answer);
 
-
-
             }
 
         }
