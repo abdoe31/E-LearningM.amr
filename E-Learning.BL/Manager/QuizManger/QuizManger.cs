@@ -141,8 +141,6 @@ public class QuizManger : IQuizManger
                     question.RightAnswer = answer;
                 }
 
-
-
             }
 
         }
