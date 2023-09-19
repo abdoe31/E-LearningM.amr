@@ -55,7 +55,7 @@ namespace E_Learning.API.Controllers
         }
 
 
-        [HttpGet("GetAllClassesRequists")]
+        [HttpGet("GetAllClassesRequists/{classid}")]
         public IActionResult GetAllClassesRequists( int classid)
         {
 
