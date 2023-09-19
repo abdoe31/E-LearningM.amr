@@ -76,14 +76,14 @@ public class QuizManger : IQuizManger
             }
 
             ).ToList();
-
+            _eLearningContext.Questions.Add(question);
+             _UnitOfWork.SaveChanges();
             foreach (var item in answers)
             {
                 question.Answers.Add(item);
             }
 
         }
-        _eLearningContext.Questions.Add(question);
         return _UnitOfWork.SaveChanges();
     }
 
@@ -140,12 +140,10 @@ public class QuizManger : IQuizManger
 
                     question.RightAnswer = answer;
                 }
-                _eLearningContext.Answers.Update(answer);
 
             }
 
         }
-        _eLearningContext.Questions.Update(question);
         return _UnitOfWork.SaveChanges();
 
     }

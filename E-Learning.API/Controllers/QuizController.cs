@@ -261,6 +261,26 @@ List<UserAnswer> userAnswers = new List<UserAnswer>();
 
 
 
+        public ActionResult<GetQuestionsDto> GetQuation(int QuationId)
+        {
+            var qustion = eLearningContext.Questions.Include(x=>x.Answers).FirstOrDefault(x => x.Id == QuationId);
+            if (qustion != null)
+            {
+                return new GetQuestionsDto
+                {
+                    QuestionID = qustion.Id,
+                    QuestionHeader = qustion.Header,
+                    questionType = qustion.Type,
+                    getAnswersDtos = qustion.Answers.Select(x => new GetAnswersDto { AnswerID = x.Id, Header = x.Header, Right = qustion.RightAnswerid == x.Id, QuestionID = x.Questionid }).ToList()
+                };
+            }
+            else
+            {
+                return Ok("Not Fount This Quation");
+            }
+
+
+        }
 
      public class checkquizSolved
     {
