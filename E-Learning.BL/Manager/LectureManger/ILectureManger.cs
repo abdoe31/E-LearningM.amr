@@ -31,6 +31,6 @@ public interface ILectureManger
 
 
     StartendLecture startWatching(int userLectureid);
-    List<GetLecturetowatchDto> getLecturetowatch(string userid);
+    List<Selectdto> getLecturetowatch(string userid , int classid);
 
 }

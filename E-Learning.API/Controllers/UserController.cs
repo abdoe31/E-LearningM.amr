@@ -187,7 +187,7 @@ namespace E_Learning.API.Controllers
 
 
 
-        [HttpPut]
+        [HttpPost]
         [Route("ChangeStudentStatu")]
 
         public IActionResult ChangeStudentStatu(changeUserStatu  changeUserStatu)
