@@ -271,7 +271,7 @@ List<UserAnswer> userAnswers = new List<UserAnswer>();
         public IActionResult GetUserQuizAnswers(checkquizSolved checkquizSolved)
         {
 
-            var quiz = eLearningContext.UserQuizzes.Where(x => x.Quizid == checkquizSolved.quizid && x.Studentid == checkquizSolved.Userid).Include(x=>x.Quiz).Include(x => x.UserAnswers).ThenInclude(x => x.Question).ThenInclude(x=>x.Answers).ThenInclude(x => x.Question.RightAnswer).FirstOrDefault();
+            var quiz = eLearningContext.UserQuizzes.Where(x => x.Quizid == checkquizSolved.quizid && x.Studentid == checkquizSolved.Userid).Include(x=>x.Quiz).Include(x => x.UserAnswers).ThenInclude(x => x.answer).ThenInclude(x=>x.Question).ThenInclude(x => x.RightAnswer).FirstOrDefault();
 
 
             var outquiz = new GetUserQuizAnswersDto { QuizHeader = quiz.Quiz.Header, Grade = quiz.Grade.ToString(), answers = quiz.UserAnswers.Select(x => {
@@ -316,8 +316,12 @@ List<UserAnswer> userAnswers = new List<UserAnswer>();
             {
                 return BadRequest();
             }
-            var exams = eLearningContext.Quizes.Where(x => x.quizType == QuizType.Month && user.Classes.Any(y => y.Id == x.Classid)).ToList();
-        
+            //var exams = eLearningContext.Quizes.Where(x => x.quizType == QuizType.Month && user.Classes.Any(y => y.Id == x.Classid)).ToList();
+            var classIds = user.Classes.Select(y => y.Id).ToList();
+
+            var exams = eLearningContext.Quizes
+                .Where(x => x.quizType == QuizType.Month && classIds.Contains((int)x.Classid)).ToList();
+
             var outexam = exams.Select(x=> new { quizid= x.Id, header= x.Header , start=x.StartTime, end=x.EndTime ,Type=x.quizType});
             return Ok(outexam);
         
@@ -331,7 +335,7 @@ List<UserAnswer> userAnswers = new List<UserAnswer>();
         {
             var userquiz = eLearningContext.UserQuizzes.Where(x => x.Studentid == userid).Include(x=>x.Student).Include(x=>x.Quiz);
 
-            return  Ok (userquiz.Select(x => new { Username = $"{x.Student.FirstName} {x.Student.SecondName} {x.Student.LastName}  ", quizname = x.Quiz.Header, quizGrade = x.Grade }));
+            return  Ok (userquiz.Select(x => new { QuizId=x.Quizid, Username = $"{x.Student.FirstName} {x.Student.SecondName} {x.Student.LastName}  ", quizname = x.Quiz.Header, quizGrade = x.Grade }));
         }
 
 
