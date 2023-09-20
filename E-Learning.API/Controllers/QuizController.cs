@@ -257,22 +257,109 @@ List<UserAnswer> userAnswers = new List<UserAnswer>();
             return Ok(new { start = UserQuiz.Start, end = UserQuiz.End  , quiestions = _quizManger.GetQustionWithAnswers(checkquizSolved.quizid) });
 
         }
-   
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
+        [HttpPost("GetUserQuizAnswers")]
+        public IActionResult GetUserQuizAnswers(checkquizSolved checkquizSolved)
+        {
+
+            var quiz = eLearningContext.UserQuizzes.Where(x => x.Quizid == checkquizSolved.quizid && x.Studentid == checkquizSolved.Userid).Include(x=>x.Quiz).Include(x => x.UserAnswers).ThenInclude(x => x.Question).ThenInclude(x => x.RightAnswer).FirstOrDefault();
+
+
+            var outquiz = new GetUserQuizAnswersDto { QuizHeader = quiz.Quiz.Header, Grade = quiz.Grade.ToString(), answers = quiz.UserAnswers.Select(x => {
+                var outuseranswe = new Answers();
+            if (x.Right==true)
+                {
+                    outuseranswe.RightAnswer = x.answer.Header;
+                    outuseranswe.WrongAnswer = null;
+                    outuseranswe.AnswerType = "R";
+
+                } else if (x.Right == false)
+                {
+                    outuseranswe.RightAnswer = x.Question.RightAnswer.Header;
+                    outuseranswe.WrongAnswer = x.answer.Header;
+                    outuseranswe.AnswerType = "W";
+
+
+                }else
+                {
+
+                    outuseranswe.RightAnswer = x.Question.RightAnswer.Header;
+                    outuseranswe.WrongAnswer = null;
+                    outuseranswe.AnswerType = "N";
+
+                }
+                outuseranswe.questionHeader = x.Question.Header;
+                outuseranswe.questionType =(QuestionType) x.Question.Type;
+                return outuseranswe;
+
+            }).ToList()  };
+
+            return Ok(outquiz);
+        }
+
+
+        [HttpGet("GetMonthExams/{userid}")]
+        public IActionResult GetMonthExams(string userid)
+        {
+            var user = eLearningContext.Users.Where(x=> x.Role==Role.Student && x.Id==userid).Include(x=>x.Classes).FirstOrDefault();
+            var exams = eLearningContext.Quizes.Where(x => x.quizType == QuizType.Month && user.Classes.Any(y => y.Id == x.Classid)).ToList();
+        
+            var outexam = exams.Select(x=> new { quizid= x.Id, header= x.Header , start=x.StartTime, end=x.EndTime ,Type=x.quizType});
+            return Ok(outexam);
+        
+        
+        
+     }
+
+
+        [HttpGet("GetUserQuizesResult/{userid}")]
+        public IActionResult GetUserQuizesResult(string userid)
+        {
+            var userquiz = eLearningContext.UserQuizzes.Where(x => x.Studentid == userid).Include(x=>x.Student).Include(x=>x.Quiz);
+
+            return  Ok (userquiz.Select(x => new { Username = $"{x.Student.FirstName} {x.Student.SecondName} {x.Student.LastName}  ", quizname = x.Quiz.Header, quizGrade = x.Grade }));
+        }
+
+
+
+
+        [HttpGet("GetQuizResult/{userid}")]
+        public IActionResult GetQuizResult(int quizid)
+        {
+            var userquiz = eLearningContext.UserQuizzes.Where(x => x.Quizid == quizid).Include(x => x.Student).Include(x => x.Quiz);
+
+            return Ok(userquiz.Select(x => new { Username = $"{x.Student.FirstName} {x.Student.SecondName} {x.Student.LastName}  ", quizname = x.Quiz.Header, quizGrade = x.Grade }));
+        }
+
     }
 
 
+    public class GetUserQuizAnswersDto
+    {
 
 
-     public class checkquizSolved
+        public string QuizHeader { get; set;}
+        public string Grade { get; set; }
+        public List<Answers> answers { get; set; } = new List<Answers>();
+
+
+    }
+    public class Answers {
+
+        public string AnswerType { get; set; }
+        public string questionHeader { get; set; }
+        public QuestionType questionType { get; set; }
+
+        public string  RightAnswer { get; set; }
+        public string  WrongAnswer { get; set; }
+
+
+
+    }
+
+    public class checkquizSolved
     {
 
         public string Userid { get; set; }
