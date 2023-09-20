@@ -288,92 +288,15 @@ public class LectureManger : ILectureManger
 
     }
 
-    public List<GetLecturetowatchDto> getLecturetowatch (string userid)
+    public List< Selectdto> getLecturetowatch (string userid)
     {
 
 
       var lectures =    _eLearningContext.UserLectures.Where(x=>x.Start==null || x.End< DateTime.Now  && x.StudentId==userid).Include(x=>x.Lecture).Include(x=> x.Lecture.VideoParts).Include(x=>x.Lecture.Quiz).Include(x=>x.Lecture.Assighnment).OrderBy(x=>x.Lecture.number);
 
-        var lecturestowatch = new List<GetLecturetowatchDto>();
+        return lectures.Select(x => new Selectdto { id = x.Id, name = x.Lecture.Header }).ToList();
 
-
-        foreach (var item  in lectures )
-        {
-
-            GetLecturetowatchDto getLecturetowatchDto = new GetLecturetowatchDto();
-
-            getLecturetowatchDto.Lectureid = item.Id;
-            getLecturetowatchDto.LectureName = item.Lecture.Header;
-            //
-
-
-            if (item.QuizSolved==false  || item.QuizRequired == true)
-            {
-
-                getLecturetowatchDto.quizId = item.Lecture.Quizid;
-                getLecturetowatchDto.QuizName = item.Lecture?.Quiz?.Header;
-
-
-
-
-
-            }
-
-            if (item.QuizSolved == false && item.QuizRequired == false    )
-            {
-                getLecturetowatchDto.quizId = item.Lecture.Quizid;
-                getLecturetowatchDto.QuizName = item.Lecture?.Quiz?.Header;
-
-                getLecturetowatchDto.videoPartdto = item.Lecture.VideoParts.OrderBy(x => x.number).Select(x => new videoPartdto { Name = x.PartHeader, Url = x.Url }).ToList();
-
-
-            }
-            if (item.QuizSolved == true )
-            {
-                getLecturetowatchDto.QuizName = item.Lecture?.Quiz?.Header;
-
-                getLecturetowatchDto.videoPartdto = item.Lecture?.VideoParts.OrderBy(x=>x.number).Select(x => new videoPartdto { Name = x.PartHeader, Url = x.Url }).ToList();
-
-
-            }
-            if (item.AssighmentSolved)
-            {
-                getLecturetowatchDto.AssighmentName = item.Lecture?.Assighnment?.Header;
-
-            }
-            if (!item.AssighmentSolved)
-            {
-                getLecturetowatchDto.Assighmentid = item.Lecture?.Assighnmentid;
-                getLecturetowatchDto.AssighmentName = item.Lecture?.Assighnment?.Header;
-
-            }
-
-
-
-            if (item.Start != null)
-            {
-                getLecturetowatchDto.start = item.Start;
-                    getLecturetowatchDto.end = item.End;
-                getLecturetowatchDto.startedwatching = true;
-            }
-            else
-            {
-
-                getLecturetowatchDto.start = null;
-                getLecturetowatchDto.end = null;
-                getLecturetowatchDto.startedwatching = false;
-
-
-            }
-
-
-
-            lecturestowatch.Add(getLecturetowatchDto);
-        }
-
-
-        return lecturestowatch;
-
+      
 
     }
 }

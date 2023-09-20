@@ -96,8 +96,8 @@ List<UserAnswer> userAnswers = new List<UserAnswer>();
                 UserAnswer userAnswer = new UserAnswer { Answerid = R.AnswerID, QuestionId = qustion.Id, Right = R.AnswerID == qustion.RightAnswerid , UserId= solveQuizDto.Userid };
                 userAnswers.Add(userAnswer);
             }
-            var quiz = eLearningContext.Quizes.Where(x => x.Id == solveQuizDto.Quizid).Include(x=>x.Questions).FirstOrDefault();
-            var userquiz = eLearningContext.UserQuizzes.Where(x=>x.Quizid== solveQuizDto.Quizid && x.Studentid==solveQuizDto.Userid).Include(x=>x.UserAnswers).FirstOrDefault();
+            var quiz = eLearningContext.Quizes.Where(x => x.Id == solveQuizDto.Quizid).Include(x=>x.Questions).Include(x=>x.Lectures).FirstOrDefault();
+            var userquiz = eLearningContext.UserQuizzes.Where(x=>x.Quizid== solveQuizDto.Quizid && x.Studentid==solveQuizDto.Userid).Include(x=>x.Student).ThenInclude(x=>x.UserLectures).Include(x=>x.UserAnswers).FirstOrDefault();
            if (userquiz == null)
             {
 
@@ -106,8 +106,15 @@ List<UserAnswer> userAnswers = new List<UserAnswer>();
             userquiz.End = DateTime.Now;
             userquiz.UserAnswers = userAnswers;
             userquiz.Grade = !userAnswers.IsNullOrEmpty() ? userAnswers.Count(x => x.Right == true) : 0;
+            if (quiz.quizType== QuizType.lecture)
+            {
+                var userlectu = userquiz.Student.UserLectures.Where(x => x.Lecture.Quizid == quiz.Id).FirstOrDefault();
 
 
+                userlectu.QuizSolved = true; 
+
+
+            }
             eLearningContext.UserQuizzes.Update(userquiz);
 
             var states = eLearningContext.SaveChanges();
@@ -264,7 +271,7 @@ List<UserAnswer> userAnswers = new List<UserAnswer>();
         public IActionResult GetUserQuizAnswers(checkquizSolved checkquizSolved)
         {
 
-            var quiz = eLearningContext.UserQuizzes.Where(x => x.Quizid == checkquizSolved.quizid && x.Studentid == checkquizSolved.Userid).Include(x=>x.Quiz).Include(x => x.UserAnswers).ThenInclude(x => x.Question).ThenInclude(x => x.RightAnswer).FirstOrDefault();
+            var quiz = eLearningContext.UserQuizzes.Where(x => x.Quizid == checkquizSolved.quizid && x.Studentid == checkquizSolved.Userid).Include(x=>x.Quiz).Include(x => x.UserAnswers).ThenInclude(x => x.Question).ThenInclude(x=>x.Answers).ThenInclude(x => x.Question.RightAnswer).FirstOrDefault();
 
 
             var outquiz = new GetUserQuizAnswersDto { QuizHeader = quiz.Quiz.Header, Grade = quiz.Grade.ToString(), answers = quiz.UserAnswers.Select(x => {
@@ -304,6 +311,11 @@ List<UserAnswer> userAnswers = new List<UserAnswer>();
         public IActionResult GetMonthExams(string userid)
         {
             var user = eLearningContext.Users.Where(x=> x.Role==Role.Student && x.Id==userid).Include(x=>x.Classes).FirstOrDefault();
+
+            if (user == null)
+            {
+                return BadRequest();
+            }
             var exams = eLearningContext.Quizes.Where(x => x.quizType == QuizType.Month && user.Classes.Any(y => y.Id == x.Classid)).ToList();
         
             var outexam = exams.Select(x=> new { quizid= x.Id, header= x.Header , start=x.StartTime, end=x.EndTime ,Type=x.quizType});

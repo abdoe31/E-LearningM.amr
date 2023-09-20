@@ -3,7 +3,9 @@ using E_Learning.BL.DTO;
 using E_Learning.DAL;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Transactions;
 
 namespace E_Learning.API.Controllers
 {
@@ -12,10 +14,13 @@ namespace E_Learning.API.Controllers
     public class LectureController : ControllerBase
     {
         private readonly ILectureManger _LectureManger;
+        private
+            readonly ELearningContext _ELearningContext;
 
-        public LectureController(ILectureManger _LectureManger)
+        public LectureController(ILectureManger _LectureManger , ELearningContext eLearningContext)
         {
             this._LectureManger = _LectureManger;
+            _ELearningContext= eLearningContext;
         }
 
 
@@ -175,10 +180,10 @@ namespace E_Learning.API.Controllers
         }
 
 
-        [HttpPost("getLecturetowatch/{userid}")]
+        [HttpPost("getLecturestowatch/{userid}")]
 
 
-        public IActionResult getLecturetowatch(string userid)
+        public IActionResult getLecturestowatch(string userid)
         {
 
 
@@ -193,6 +198,40 @@ namespace E_Learning.API.Controllers
         }
 
 
+        [HttpGet("GettheLecture /{userLectureid}")]
+
+
+        public IActionResult GettheLecture(int userLectureid)
+        {
+
+
+      var userlecture =       _ELearningContext.UserLectures.Where(x => x.Id== userLectureid).Include(x => x.Lecture).ThenInclude(x => x.VideoParts).Include(x => x.Student).FirstOrDefault();
+
+            if (userlecture.QuizRequired==false || (userlecture.QuizRequired=true&& userlecture.QuizSolved==true))
+            {
+
+                if (userlecture.Start == null)
+                {
+                    return Ok(new { Lectureid = userlecture.Id, lectureName = userlecture.Lecture.Header, videoParts = userlecture.Lecture.VideoParts.Select(x => new { id = x.Id, name = x.PartHeader, Partnumber = x.number }).OrderBy(y => y.Partnumber).ToList()  , started= false    Quizid = userlecture.Lecture.Quizid, assighmentid = userlecture.Lecture.Assighnmentid } );
+                }
+
+                if (userlecture.Start != null)
+                {
+                    return Ok(new { Lectureid = userlecture.Id, lectureName = userlecture.Lecture.Header, videoParts = userlecture.Lecture.VideoParts.Select(x => new { id = x.Id, name = x.PartHeader, Partnumber = x.number }).OrderBy(y => y.Partnumber).ToList(), started = true , start =userlecture.Start, end = userlecture.End, Quizid = userlecture.Lecture.Quizid, assighmentid = userlecture.Lecture.Assighnmentid });
+                }
+
+            }else
+            {
+
+                return Ok(new { Lectureid = userlecture.Id, lectureName = userlecture.Lecture.Header, Quizid=userlecture.Lecture.Quizid,  assighmentid= userlecture.Lecture.Assighnmentid});
+
+            }
+
+            return BadRequest();
+        }
+
+
+
         [HttpPost("AcessLectureByCode/{userid}/{code}")]
 
         public IActionResult AcessLectureByCode(string code, string userid)
@@ -202,4 +241,16 @@ namespace E_Learning.API.Controllers
 
         }
     }
+
+public class UserLcture
+    {
+
+
+        public string userid { get; set; }
+        public int lectureid { get; set; }  
+    }
+
+
 }
+
+
