@@ -217,7 +217,7 @@ namespace E_Learning.API.Controllers
 
                 if (userlecture.Start != null)
                 {
-                    return Ok(new { Lectureid = userlecture.Id, lectureName = userlecture.Lecture.Header, videoParts = userlecture.Lecture.VideoParts.Select(x => new { id = x.Id, name = x.PartHeader, Partnumber = x.number }).OrderBy(y => y.Partnumber).ToList(), started = true , start =userlecture.Start, end = userlecture.End, Quizid = userlecture.Lecture.Quizid, assighmentid = userlecture.Lecture.Assighnmentid });
+                    return Ok(new { Lectureid = userlecture.Id, lectureName = userlecture.Lecture.Header, videoParts = userlecture.Lecture.VideoParts.Select(x => new { id = x.Id, name = x.PartHeader, Partnumber = x.number , Link= x.Url }).OrderBy(y => y.Partnumber).ToList(), started = true , start =userlecture.Start, end = userlecture.End, Quizid = userlecture.Lecture.Quizid, assighmentid = userlecture.Lecture.Assighnmentid });;
                 }
 
             }else
