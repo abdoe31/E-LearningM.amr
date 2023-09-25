@@ -9,8 +9,8 @@ namespace E_Learning.BL;
     {
 
     public int Quizid { get; set; } 
-    public string? Userid { get; set; }
-    public List<UserAnswerDto> userAnswerDtos { get; set; } = new List<UserAnswerDto>();    
+    public string Userid { get; set; }
+    public List<UserAnswerDto>? userAnswerDtos { get; set; } = new List<UserAnswerDto>();    
 
     }
 

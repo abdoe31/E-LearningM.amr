@@ -84,12 +84,10 @@ namespace E_Learning.API.Controllers
         [HttpPost("StudentSolveQuiz")]
 
         public IActionResult StudentSolveQuiz( SolveQuizDto solveQuizDto )
-        
-        
         {
 
             int Grade = 0;
-List<UserAnswer> userAnswers = new List<UserAnswer>();
+            List<UserAnswer> userAnswers = new List<UserAnswer>();
             foreach (var R in solveQuizDto.userAnswerDtos)
             {
                 var qustion = eLearningContext.Questions.FirstOrDefault(x => x.Id == R.QuestionId);
@@ -97,7 +95,7 @@ List<UserAnswer> userAnswers = new List<UserAnswer>();
                 userAnswers.Add(userAnswer);
             }
             var quiz = eLearningContext.Quizes.Where(x => x.Id == solveQuizDto.Quizid).Include(x=>x.Questions).Include(x=>x.Lectures).FirstOrDefault();
-            var userquiz = eLearningContext.UserQuizzes.Where(x=>x.Quizid== solveQuizDto.Quizid && x.Studentid==solveQuizDto.Userid).Include(x=>x.Student).ThenInclude(x=>x.UserLectures).Include(x=>x.UserAnswers).FirstOrDefault();
+            var userquiz = eLearningContext.UserQuizzes.Include(x=>x.Student).ThenInclude(x=>x.UserLectures).ThenInclude(x=>x.Lecture).Where(x=>x.Quizid== solveQuizDto.Quizid && x.Studentid==solveQuizDto.Userid).Include(x=>x.Student).ThenInclude(x=>x.UserLectures).Include(x=>x.UserAnswers).FirstOrDefault();
            if (userquiz == null)
             {
 
