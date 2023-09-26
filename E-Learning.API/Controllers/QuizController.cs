@@ -347,8 +347,27 @@ namespace E_Learning.API.Controllers
             return Ok(userquiz.Select(x => new { Username = $"{x.Student.FirstName} {x.Student.SecondName} {x.Student.LastName}  ", quizname = x.Quiz.Header, quizGrade = x.Grade }));
         }
 
+
+
+        [HttpGet("GetQId")]
+        public ActionResult<GetQuestionsDto> GetQId(int QId)
+        {
+            var userquiz = eLearningContext.Questions.Include(x => x.Answers).Where(x => x.Id == QId).FirstOrDefault();
+            return new GetQuestionsDto
+            {
+                Quizid = userquiz.QuizId,
+                QuestionID = userquiz.Id,
+                QuestionHeader = userquiz.Header,
+                questionType = userquiz.Type,
+                getAnswersDtos = userquiz.Answers.Select(y => new GetAnswersDto { AnswerID = y.Id, Header = y.Header, QuestionID = userquiz.Id, Right = userquiz.RightAnswerid == y.Id ? true : false }).ToList()
+            };
+        }
+
     }
 
+
+
+ 
 
     public class GetUserQuizAnswersDto
     {
