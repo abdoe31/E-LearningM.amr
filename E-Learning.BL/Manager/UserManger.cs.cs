@@ -111,6 +111,16 @@ namespace E_Learning.BL
         public int ChangeStudentStatu(changeUserStatu changeUserStatu)
         {
             var student = _UnitOfWork._Userrepository.GetUser(changeUserStatu.Id);
+
+             if (changeUserStatu.Active == false)
+            {
+
+
+                _UnitOfWork._Userrepository.Delete(student);
+                return _UnitOfWork.SaveChanges();
+
+            }
+
             student.Active = changeUserStatu.Active;
 
             if (!(changeUserStatu.UserClasses.IsNullOrEmpty()))
