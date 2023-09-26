@@ -292,7 +292,7 @@ public class LectureManger : ILectureManger
     {
 
 
-      var lectures =    _eLearningContext.UserLectures.Where(x=>(x.Start==null || x.End< DateTime.Now)  && x.StudentId==userid && x.Lecture.Classid==classid).Include(x=>x.Lecture).Include(x=> x.Lecture.VideoParts).Include(x=>x.Lecture.Quiz).Include(x=>x.Lecture.Assighnment).OrderBy(x=>x.Lecture.number);
+      var lectures =    _eLearningContext.UserLectures.Where(x=>(x.Start==null || x.End> DateTime.Now)  && x.StudentId==userid && x.Lecture.Classid==classid).Include(x=>x.Lecture).Include(x=> x.Lecture.VideoParts).Include(x=>x.Lecture.Quiz).Include(x=>x.Lecture.Assighnment).OrderBy(x=>x.Lecture.number);
 
         return lectures.Select(x => new Selectdto { id = x.Id, name = x.Lecture.Header }).ToList();
 
