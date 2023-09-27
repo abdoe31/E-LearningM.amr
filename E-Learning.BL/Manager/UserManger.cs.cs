@@ -121,6 +121,7 @@ namespace E_Learning.BL
 
             }
 
+
             student.Active = changeUserStatu.Active;
 
             if (!(changeUserStatu.UserClasses.IsNullOrEmpty()))
