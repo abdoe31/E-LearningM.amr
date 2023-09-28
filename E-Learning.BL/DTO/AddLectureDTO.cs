@@ -22,6 +22,7 @@ public class  AddLectureDTO
     public List<Addfiles> addFiles { get; set; } = new List<Addfiles>();
 
 
+
 }
 public class Addvideos
 {
