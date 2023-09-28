@@ -23,3 +23,25 @@ public partial class VideoPart
 
     public virtual Lecture? Leacture { get; set; }
 }
+
+
+
+public partial class Videofiles
+{
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+
+    public int Id { get; set; }
+
+    public int? Leactureid { get; set; }
+
+    public string? Path { get; set; }
+    public int? number { get; set; }
+
+    public string? PartHeader { get; set; }
+
+    public string UpdatedBy { get; set; } = null!;
+
+    public DateTime? Updatedat { get; set; }
+
+    public virtual Lecture? Leacture { get; set; }
+}

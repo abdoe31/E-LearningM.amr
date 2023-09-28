@@ -205,25 +205,41 @@ namespace E_Learning.API.Controllers
         {
 
 
-      var userlecture =       _ELearningContext.UserLectures.Where(x => x.Id== userLectureid).Include(x => x.Lecture).ThenInclude(x => x.VideoParts).Include(x => x.Student).FirstOrDefault();
+      var userlecture =       _ELearningContext.UserLectures.Where(x => x.Id== userLectureid).Include(x => x.Lecture).ThenInclude(x => x.VideoParts).Include(x=>x.Lecture.Videofiles). Include(x => x.Student).FirstOrDefault();
 
             if (userlecture.QuizRequired==false || (userlecture.QuizRequired=true&& userlecture.QuizSolved==true))
             {
 
                 if (userlecture.Start == null)
                 {
-                    return Ok(new { Lectureid = userlecture.Id, lectureName = userlecture.Lecture.Header, videoParts = userlecture.Lecture.VideoParts.Select(x => new { id = x.Id, name = x.PartHeader, Partnumber = x.number }).OrderBy(y => y.Partnumber).ToList()  , started= false ,   Quizid = userlecture.Lecture.Quizid, assighmentid = userlecture.Lecture.Assighnmentid } );
+                    return Ok(new { Lectureid = userlecture.Id, lectureName = userlecture.Lecture.Header, videoParts = userlecture.Lecture.VideoParts.Select(x => new { id = x.Id, name = x.PartHeader, Partnumber = x.number }).OrderBy(y => y.Partnumber).ToList()  ,
+
+                        videoFiles = userlecture.Lecture.Videofiles.Select(x => new { id = x.Id, name = x.PartHeader, Partnumber = x.number, path = x.Path }).OrderBy(y => y.Partnumber).ToList(),
+
+                        started = false ,   Quizid = userlecture.Lecture.Quizid, assighmentid = userlecture.Lecture.Assighnmentid } );
                 }
 
                 if (userlecture.Start != null)
                 {
-                    return Ok(new { Lectureid = userlecture.Id, lectureName = userlecture.Lecture.Header, videoParts = userlecture.Lecture.VideoParts.Select(x => new { id = x.Id, name = x.PartHeader, Partnumber = x.number , Link= x.Url }).OrderBy(y => y.Partnumber).ToList(), started = true , start =userlecture.Start, end = userlecture.End, Quizid = userlecture.Lecture.Quizid, assighmentid = userlecture.Lecture.Assighnmentid });;
+                    return Ok(new { Lectureid = userlecture.Id, lectureName = userlecture.Lecture.Header, videoParts = userlecture.Lecture.VideoParts.Select(x => new { id = x.Id, name = x.PartHeader, Partnumber = x.number , Link= x.Url }).OrderBy(y => y.Partnumber).ToList(), started = true 
+
+
+                        ,
+                        videoFiles= userlecture.Lecture.Videofiles.Select(x => new { id = x.Id, name = x.PartHeader, Partnumber = x.number, path = x.Path }).OrderBy(y => y.Partnumber).ToList(),
+
+
+
+                        start =userlecture.Start, end = userlecture.End, Quizid = userlecture.Lecture.Quizid, assighmentid = userlecture.Lecture.Assighnmentid });;
                 }
 
             }else
             {
 
-                return Ok(new { Lectureid = userlecture.Id, lectureName = userlecture.Lecture.Header, Quizid=userlecture.Lecture.Quizid,  assighmentid= userlecture.Lecture.Assighnmentid});
+                return Ok(new { Lectureid = userlecture.Id, lectureName = userlecture.Lecture.Header, Quizid=userlecture.Lecture.Quizid,
+
+                    videoFiles = userlecture.Lecture.Videofiles.Select(x => new { id = x.Id, name = x.PartHeader, Partnumber = x.number, path = x.Path }).OrderBy(y => y.Partnumber).ToList(),
+
+                    assighmentid = userlecture.Lecture.Assighnmentid});
 
             }
 

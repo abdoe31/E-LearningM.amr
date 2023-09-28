@@ -62,6 +62,7 @@ public class LectureManger : ILectureManger
         ,
             Classid = addlecturedto.Classid,
             number = addlecturedto.number, VideoParts = addlecturedto.addvideos.Select(x => new VideoPart { number = x.number, Url = x.link, PartHeader = x.PartHeader }).ToList()
+            , Videofiles= addlecturedto.addFiles.Select(x => new Videofiles { number = x.number, Path = x.Path, PartHeader = x.PartHeader }).ToList()
         };
         _UnitOfWork.lecturerepository.Add(lecture);
         return _UnitOfWork.SaveChanges();

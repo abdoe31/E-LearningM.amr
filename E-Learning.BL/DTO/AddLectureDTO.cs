@@ -19,6 +19,8 @@ public class  AddLectureDTO
     public int? number { get; set; }
 
     public List<Addvideos>  addvideos { get; set; } = new List<Addvideos>();
+    public List<Addfiles> addFiles { get; set; } = new List<Addfiles>();
+
 
 }
 public class Addvideos
@@ -26,6 +28,18 @@ public class Addvideos
 
 
     public string? link { get; set; }
+    public string? PartHeader { get; set; }
+
+    public int? number { get; set; }
+}
+
+
+
+public class Addfiles
+{
+
+
+    public string? Path { get; set; }
     public string? PartHeader { get; set; }
 
     public int? number { get; set; }

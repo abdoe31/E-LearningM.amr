@@ -34,4 +34,6 @@ public partial class Lecture
     public virtual ICollection<UserLecture> UserLectures { get; set; } = new List<UserLecture>();
 
     public virtual ICollection<VideoPart> VideoParts { get; set; } = new List<VideoPart>();
+    public virtual ICollection<Videofiles>  Videofiles { get; set; } = new List<Videofiles>();
+
 }

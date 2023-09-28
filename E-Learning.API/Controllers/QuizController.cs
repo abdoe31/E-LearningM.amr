@@ -258,7 +258,6 @@ namespace E_Learning.API.Controllers
                 return BadRequest("quiz is finished ");
             }
 
-
             return Ok(new { start = UserQuiz.Start, end = UserQuiz.End  , quiestions = _quizManger.GetQustionWithAnswers(checkquizSolved.quizid) });
 
         }

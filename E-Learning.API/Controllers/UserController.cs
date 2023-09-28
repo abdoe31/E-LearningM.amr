@@ -302,21 +302,32 @@ namespace E_Learning.API.Controllers
 
         }
 
-        [HttpDelete("DeleteUser/{userid}")]
-        public async  Task<IActionResult> DeleteUser( DeleteUserDto deleteUserDto)
+        [ HttpPost("DeleteUser")]
+        public  IActionResult  DeleteUser( DeleteUserDto deleteUserDto)
         {
             //  var user  =  _UnitOfWork._Userrepository.GetUser(userid);
             //  await _userManager.DeleteAsync(user);
             var Adminid = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
             var Admin = _UnitOfWork._Userrepository.GetUser(Adminid);
             if (Admin == null) {
-                return Problem();
+                return BadRequest("sadasd" );
             }
             if (Admin.Pasword == deleteUserDto.AdminPassword)
             {
                 return Ok(_UserManger.DeleteUser(deleteUserDto.UserId));
             }
-            return BadRequest();
+            return BadRequest(Admin.Pasword);
+
+        }
+
+        [HttpDelete("DeleteAdmin/{userid}")]
+        public async Task<IActionResult> DeleteUser( string userid)
+        {
+              var user  =  _UnitOfWork._Userrepository.GetUser(userid);
+             await _userManager.DeleteAsync(user);
+            {
+                return Ok(_UserManger.DeleteUser(userid));
+            }
 
         }
 
