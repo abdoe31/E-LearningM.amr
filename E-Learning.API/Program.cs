@@ -92,12 +92,11 @@ builder.Services.AddScoped<IAssighmentManger, AssighmentManger>();
 var app = builder.Build();
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
+            
     
                 app.UseSwagger();
                 app.UseSwaggerUI();
-            }
+            
 #region File Handeling
 var staticFilesPath = Path.Combine(Environment.CurrentDirectory, "Files");
 app.UseStaticFiles(new StaticFileOptions
