@@ -16,6 +16,13 @@ namespace E_Learning.DAL
         Manual, Code
 
     }
+    public static class Time
+    {
+        public static  DateTime GetCurrentDateTime()
+        {
+            return DateTime.UtcNow.AddHours(3);
 
+        }
+    }
 
 }

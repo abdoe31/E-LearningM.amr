@@ -144,7 +144,7 @@ namespace E_Learning.API.Controllers
                 SecurityAlgorithms.HmacSha256Signature);
 
             // Putting All together
-            DateTime exp = DateTime.Now.AddDays(200);
+            DateTime exp = Time.GetCurrentDateTime().AddDays(500);
             JwtSecurityToken token = new JwtSecurityToken(
                     claims: claimsList,
                     signingCredentials: signingCredentials,
@@ -302,7 +302,20 @@ namespace E_Learning.API.Controllers
 
         }
 
-        [ HttpPost("DeleteUser")]
+
+        [HttpGet("gettime")]
+        public IActionResult gettime()
+        {
+
+
+            return Ok(Time.GetCurrentDateTime().ToString());
+
+
+
+        }
+
+
+        [HttpPost("DeleteUser")]
         public  IActionResult  DeleteUser( DeleteUserDto deleteUserDto)
         {
             //  var user  =  _UnitOfWork._Userrepository.GetUser(userid);

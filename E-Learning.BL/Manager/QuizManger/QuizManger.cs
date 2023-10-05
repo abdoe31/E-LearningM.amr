@@ -173,7 +173,7 @@ public class QuizManger : IQuizManger
 
 
 
-                getAnswersDtos = x.Answers.Select(y => new GetAnswersDto { AnswerID = y.Id, Header = y.Header, QuestionID = x.Id, Right = x.RightAnswerid == y.Id ? true : false }).ToList()
+                getAnswersDtos = x.Answers.Select(y => new GetAnswersDto { AnswerID = y.Id, Header = y.Header, QuestionID = x.Id, Right = x.RightAnswerid == y.Id ? true : false }).OrderBy(y=>y.Header)     .ToList()
             }).OrderBy(x => Guid.NewGuid()).ToList()
         };
 

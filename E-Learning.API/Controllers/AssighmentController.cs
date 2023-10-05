@@ -1,4 +1,7 @@
-﻿using E_Learning.BL;
+﻿using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
+using E_Learning.API.Controllers.blob;
+using E_Learning.BL;
 using E_Learning.DAL;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -13,57 +16,41 @@ namespace E_Learning.API.Controllers
     {
         private readonly IAssighmentManger _Assighmenger;
         private readonly ELearningContext eLearningContext;
+        private readonly BlobServiceClient _blobServiceClient;
+        private IBlobService _blobService;
 
-        public AssighmentController(IAssighmentManger Assighmenger, ELearningContext eLearningContext)
+
+
+        public AssighmentController(IAssighmentManger Assighmenger, ELearningContext eLearningContext, IBlobService blobService)
         {
             _Assighmenger = Assighmenger;
             this.eLearningContext = eLearningContext;
+
+            _blobService = blobService;
+
         }
 
-   
+        private BlobContainerClient GetContainerClient(string blobContainerName)
+        {
+            var containerClient = _blobServiceClient.GetBlobContainerClient(blobContainerName);
+            containerClient.CreateIfNotExists(PublicAccessType.Blob);
+            return containerClient;
+        }
 
-        [HttpPost]
-        public ActionResult<UploadFileResultDto> Upload(IFormFile file)
+        [HttpPost("Upload")]
+        public async Task<ActionResult<UploadFileResultDto>> Upload(IFormFile file)
         {
             var extension = Path.GetExtension(file.FileName);
 
-            var allowedExtension = new string[]
-            {
-                ".png",
-                ".jpg",
-                ".avg",
-                ".webp",
-                ".jpeg" , ".pdf"
-            };
+            var result = await _blobService.UploadFileBlobAsync(
+                     "file",
+                     file.OpenReadStream(),
+                     file.ContentType,
+                     file.FileName);
 
-            bool isAllowedExtension = allowedExtension.Contains(extension, StringComparer.InvariantCultureIgnoreCase);
+            var toReturn = result.AbsoluteUri;
 
-            if (!isAllowedExtension)
-            {
-                return BadRequest(new UploadFileResultDto(false, "is not valid", " "));
-            }
-
-
-            bool isSizedAllowed = file.Length is > 0 and <= 5_000_000;
-
-            if (!isAllowedExtension)
-            {
-                return BadRequest(new UploadFileResultDto(false, "is not valid", " "));
-            }
-
-
-            var newFileNmae = $"{Guid.NewGuid()}{extension}";
-
-            var imagesPath = Path.Combine(Environment.CurrentDirectory, "Files");
-
-            var fulFilePath = Path.Combine(imagesPath, newFileNmae);
-
-            using var stream = new FileStream(fulFilePath, FileMode.Create);
-            file.CopyTo(stream);
-
-            //D:\dot net iti\finalprojectititbackend\Airbnb\Airbnb.API\Images\
-            var url = $"{Request.Scheme}://{Request.Host}/Files/{newFileNmae}";
-            return new UploadFileResultDto(true, "Suceess", url);
+            return Ok(new { url = toReturn });
         }
 
 

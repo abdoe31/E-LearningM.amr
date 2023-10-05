@@ -101,7 +101,7 @@ namespace E_Learning.API.Controllers
 
                 return BadRequest();
             }
-            userquiz.End = DateTime.Now;
+            userquiz.End = Time.GetCurrentDateTime();
             userquiz.UserAnswers = userAnswers;
             userquiz.Grade = !userAnswers.IsNullOrEmpty() ? userAnswers.Count(x => x.Right == true) : 0;
             if (quiz.quizType== QuizType.lecture)
@@ -194,7 +194,7 @@ namespace E_Learning.API.Controllers
             }
 
 
-            if (UserQuiz.End<=DateTime.Now) {
+            if (UserQuiz.End<=Time.GetCurrentDateTime()) {
 
                 if (quiz.quizType== QuizType.lecture)
                 {
@@ -203,7 +203,7 @@ namespace E_Learning.API.Controllers
                 }
                 else
                 {
-                    if (quiz.EndTime<= DateTime.Now)
+                    if (quiz.EndTime<= Time.GetCurrentDateTime())
                     {
                         return Ok(new { solved = true, show = true });
 
@@ -242,7 +242,7 @@ namespace E_Learning.API.Controllers
             if (UserQuiz == null)
             {
 
-                UserQuiz= new UserQuiz {  Quizid= checkquizSolved.quizid ,  Quiz=quiz, Studentid=checkquizSolved.Userid ,Start=DateTime.Now, End=DateTime.Now.AddMinutes((int)quiz.Duration)};
+                UserQuiz= new UserQuiz {  Quizid= checkquizSolved.quizid ,  Quiz=quiz, Studentid=checkquizSolved.Userid ,Start=Time.GetCurrentDateTime(), End=Time.GetCurrentDateTime().AddMinutes((int)quiz.Duration)};
 
                 eLearningContext.UserQuizzes.Add(UserQuiz);
                 eLearningContext.SaveChanges();
@@ -250,7 +250,7 @@ namespace E_Learning.API.Controllers
             
             }
 
-            if (UserQuiz.End <= DateTime.Now)
+            if (UserQuiz.End <= Time.GetCurrentDateTime())
             {
                 UserQuiz.Grade= !UserQuiz.UserAnswers.IsNullOrEmpty() ? UserQuiz.UserAnswers.Count(x => x.Right == true) : 0;
                 eLearningContext.SaveChanges();

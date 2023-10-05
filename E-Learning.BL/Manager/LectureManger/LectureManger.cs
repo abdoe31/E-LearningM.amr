@@ -256,7 +256,7 @@ public class LectureManger : ILectureManger
         lecturecode.StudentId = userid;
 
         lecturecode.Used = true;
-        lecturecode.Usedate = DateTime.Now;
+        lecturecode.Usedate = Time.GetCurrentDateTime();
 
         _UnitOfWork._Userrepository.GetUser(userid).UserLectures.Add( new UserLecture {  Lectureid=lecturecode.Lectureid , AcessType= AcessType.Code,
             Duration= lecturecode.duration, StudentId=  userid , QuizRequired= (bool)lecturecode.QuizRequired 
@@ -268,11 +268,11 @@ public class LectureManger : ILectureManger
     {
         var userlecture = _eLearningContext.UserLectures.Where(x=>x.Id==userLectureid).FirstOrDefault();
 
-        userlecture.Start = DateTime.Now;
+        userlecture.Start = Time.GetCurrentDateTime();
 
         if(userlecture.Duration != null)
         {
-            userlecture.End = DateTime.Now.AddDays((int)userlecture.Duration);
+            userlecture.End = Time.GetCurrentDateTime().AddDays((int)userlecture.Duration);
 
 
         }
@@ -293,7 +293,7 @@ public class LectureManger : ILectureManger
     {
 
 
-      var lectures =    _eLearningContext.UserLectures.Where(x=>(x.Start==null || x.End> DateTime.Now)  && x.StudentId==userid && x.Lecture.Classid==classid).Include(x=>x.Lecture).Include(x=> x.Lecture.VideoParts).Include(x=>x.Lecture.Quiz).Include(x=>x.Lecture.Assighnment).OrderBy(x=>x.Lecture.number);
+      var lectures =    _eLearningContext.UserLectures.Where(x=>(x.Start==null || x.End> Time.GetCurrentDateTime())  && x.StudentId==userid && x.Lecture.Classid==classid).Include(x=>x.Lecture).Include(x=> x.Lecture.VideoParts).Include(x=>x.Lecture.Quiz).Include(x=>x.Lecture.Assighnment).OrderBy(x=>x.Lecture.number);
 
         return lectures.Select(x => new Selectdto { id = x.Id, name = x.Lecture.Header }).ToList();
 

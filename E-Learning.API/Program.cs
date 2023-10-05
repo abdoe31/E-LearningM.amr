@@ -5,6 +5,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.EntityFrameworkCore;
+using Azure.Storage.Blobs;
+using Microsoft.Extensions.Configuration;
+using E_Learning.API.Controllers.blob;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -66,9 +70,18 @@ builder.Services.AddAuthentication(options =>
 #region Service
 
 //database
-builder.Services.AddDbContext<ELearningContext>();
+
+builder.Services.AddDbContext<ELearningContext>(options =>
+ options.UseSqlServer("Server=tcp:mramr.database.windows.net,1433;Initial Catalog=amr;Persist Security Info=False;User ID=amr;Password=Asdzxc@123;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"));
+
+builder.Services.AddScoped(x => new
+BlobServiceClient("DefaultEndpointsProtocol=https;AccountName=thematrixs;AccountKey=92lQAhAIEgTlp1TwLCPDHyoKlOZTLc1pTrVZIIDLWLSu1Df+lDpFIHq30kHlip5ajyn+BMarC5f9+AStVv3rGg==;EndpointSuffix=core.windows.net"));
+
+
 
 //repos
+builder.Services.AddScoped<IBlobService, BlobService>();
+
 builder.Services.AddScoped<IUserrepository, Userrepository>();
 builder.Services.AddScoped<IUserAnswerrepository, UserAnswerrepository>();
 builder.Services.AddScoped<IClassrepository, Classrepository>();
@@ -97,15 +110,6 @@ var app = builder.Build();
                 app.UseSwagger();
                 app.UseSwaggerUI();
             
-#region File Handeling
-var staticFilesPath = Path.Combine(Environment.CurrentDirectory, "Files");
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new PhysicalFileProvider(staticFilesPath),
-    RequestPath = "/Files"
-
-});
-#endregion
 app.UseHttpsRedirection();
 
             app.UseAuthorization();
