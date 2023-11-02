@@ -2,6 +2,7 @@
 using E_Learning.BL.DTO;
 using E_Learning.DAL;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -21,6 +22,23 @@ namespace E_Learning.API.Controllers
         {
             this._LectureManger = _LectureManger;
             _ELearningContext= eLearningContext;
+        }
+        [HttpDelete("deleteLectueAccess/{lectureACid}")]
+
+        public IActionResult deleteLectueAccess( int lectureACid)
+        {
+       var acces=       _ELearningContext.UserLectures.Where(x => x.Id == lectureACid).FirstOrDefault();
+
+            if (acces == null)
+            {
+
+                return BadRequest();
+            }
+            _ELearningContext.UserLectures.Remove(acces);
+
+            _ELearningContext.SaveChanges();
+
+            return Ok();
         }
 
 
@@ -48,8 +66,15 @@ namespace E_Learning.API.Controllers
             {
                 return BadRequest();
             }
+            var n =  _LectureManger.AddAcessToUser(addLectureAcessDtos);
 
-            return Ok(_LectureManger.AddAcessToUser(addLectureAcessDtos));
+            if (n < 0)
+            {
+
+
+                return BadRequest();
+            }
+            return Ok(n);
 
 
         }
@@ -205,7 +230,7 @@ namespace E_Learning.API.Controllers
         {
 
 
-      var userlecture =       _ELearningContext.UserLectures.Where(x => x.Id== userLectureid).Include(x => x.Lecture).ThenInclude(x => x.VideoParts).Include(x=>x.Lecture.Videofiles). Include(x => x.Student).FirstOrDefault();
+      var userlecture =_ELearningContext.UserLectures.Where(x => x.Id== userLectureid).Include(x => x.Lecture).ThenInclude(x => x.VideoParts).Include(x=>x.Lecture.Videofiles). Include(x => x.Student).FirstOrDefault();
 
             if (userlecture.QuizRequired==false || (userlecture.QuizRequired=true&& userlecture.QuizSolved==true))
             {
@@ -235,6 +260,8 @@ namespace E_Learning.API.Controllers
             }else
             {
 
+
+
                 return Ok(new { Lectureid = userlecture.Id, lectureName = userlecture.Lecture.Header, Quizid=userlecture.Lecture.Quizid,
 
                     videoFiles = userlecture.Lecture.Videofiles.Select(x => new { id = x.Id, name = x.PartHeader, Partnumber = x.number, path = x.Path }).OrderBy(y => y.Partnumber).ToList(),
@@ -244,6 +271,38 @@ namespace E_Learning.API.Controllers
             }
 
             return BadRequest();
+        }
+
+
+
+
+        [HttpGet("GettheLectureToadmin/{lectureid}")]
+
+
+        public IActionResult GettheLectureToadmin(int lectureid)
+        {
+
+
+            var userlecture = _ELearningContext.Lectures.Where(x => x.Id == lectureid).Include(x=>x.Videofiles).Include(x=>x.VideoParts).FirstOrDefault();
+            if(userlecture== null)
+            {
+                return BadRequest();
+            }
+
+                
+                    return Ok(new
+                    {
+
+                        Lectureid = userlecture.Id,
+                        lectureName = userlecture.Header,
+                        videoParts = userlecture.VideoParts.Select(x => new { id = x.Id, name = x.PartHeader, Partnumber = x.number , link=x.Url }).OrderBy(y => y.Partnumber).ToList(),
+                        videoFiles = userlecture.Videofiles.Select(x => new { id = x.Id, name = x.PartHeader, Partnumber = x.number, path = x.Path }).OrderBy(y => y.Partnumber).ToList(),
+                        started = true,
+                        Quizid = userlecture.Quizid,
+                        assighmentid = userlecture.Assighnmentid
+                 
+                    });
+              
         }
 
 

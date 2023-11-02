@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Azure.Core;
@@ -35,13 +36,49 @@ public class LectureManger : ILectureManger
 
         foreach (var item in addLectureAcessDtos)
         {
+            var lec = _eLearningContext.Lectures.Where(x => x.Id == item.Lectureid).FirstOrDefault();
+            if(lec == null)
+            {
 
-            UserLecture userLecture = new UserLecture
-            { Lectureid = item.Lectureid, AcessType = item.AcessType,
-                StudentId = item.UserId,
-                QuizRequired = item.quizrequird, Duration = item.Duration };
+                return -2;
+            }
+            var oldaccess = _eLearningContext.UserLectures.Where(x => x.StudentId == item.UserId &&
+            x.Lectureid == item.Lectureid).FirstOrDefault();
+            if(oldaccess != null)
+            {
+                if (oldaccess.Start == null || oldaccess.End > Time.GetCurrentDateTime())
+                {
 
-            UserLectures.Add(userLecture);
+                    return -2;
+                }
+                else
+                {
+                    UserLecture userLecture = new UserLecture
+                    {
+                        Lectureid = item.Lectureid,
+                        AcessType = item.AcessType,
+                        StudentId = item.UserId,
+                        QuizRequired = false,
+                        Duration = item.Duration
+                    };
+
+                    UserLectures.Add(userLecture);
+                }
+
+            }else
+            {
+                UserLecture userLecture = new UserLecture
+                {
+                    Lectureid = item.Lectureid,
+                    AcessType = item.AcessType,
+                    StudentId = item.UserId,
+                    QuizRequired = item.quizrequird,
+                    Duration = item.Duration
+                };
+
+                UserLectures.Add(userLecture);
+            }
+            
         }
 
 
@@ -56,7 +93,7 @@ public class LectureManger : ILectureManger
 
         Lecture lecture = new Lecture
         {
-            Header = addlecturedto.Header,
+            Header = addlecturedto.Header.Trim(),
             Assighnmentid = addlecturedto.Assighnmentid,
             Quizid = addlecturedto.Quizid
         ,
@@ -141,25 +178,26 @@ public class LectureManger : ILectureManger
     public LectureAttendanceDTO GetLectureAttendance(int lectureId)
     {
 
-
-        var lecture = _eLearningContext.UserLectures.Where(x => x.Lectureid == lectureId).Include(x=>x.Lecture).Include(x=>x.Student);
-        if (lecture == null)
+        var lec = _eLearningContext.Lectures.Where(x => x.Id == lectureId).Include(x => x.UserLectures).ThenInclude(x => x.Student).FirstOrDefault();
+      if (lec == null)
         {
-
             return null;
         }
+        
+        var lecture = _eLearningContext.UserLectures.Where(x => x.Lectureid == lectureId).Include(x=>x.Lecture).Include(x=>x.Student);
 
 
         return new LectureAttendanceDTO
         {
-            LectureName = lecture.FirstOrDefault().Lecture.Header,
-            userLectureAttendances = lecture.Select(x =>
+             
+            LectureName =lec.Header,
+            userLectureAttendances = lec.UserLectures.Select(x =>
         new UserLectureAttendance
         {
             UserName = $"{x.Student.FirstName}  {x.Student.SecondName}  {x.Student.LastName}",
-            start = (DateTime)x.Start,
-            end = (DateTime)x.End
-
+             start =x.Start,
+            end = x.End
+            ,  id= x.Id
         }
 
         ).ToList()
@@ -167,9 +205,10 @@ public class LectureManger : ILectureManger
 
     }
 
+
     public List<LectureDetailsDto> GetLectureList(int Classid)
     {
-        var Lectures = _eLearningContext.Lectures.Where(x => x.Classid == Classid);
+        var Lectures = _eLearningContext.Lectures.Where(x => x.Classid == Classid).OrderBy(x=>x.number);
 
 
         if (Lectures.IsNullOrEmpty())
@@ -192,7 +231,30 @@ public class LectureManger : ILectureManger
         {
             return null;
         }
-        var users = _UnitOfWork._Userrepository.GetStudentsByClass((int)lecture.Classid).Users;
+        var users = _UnitOfWork._Userrepository.GetStudentsByClassToLecture((int)lecture.Classid).Users.Where(x =>
+
+        {  if (x.UserLectures.Where(y => y.Lectureid == Lectureid).FirstOrDefault() == null)
+            {
+                return true;
+
+            }
+                if  (x.UserLectures.Where(x => x.Lectureid == Lectureid).FirstOrDefault()?.Start != null && Time.GetCurrentDateTime() > x.UserLectures.Where(x => x.Lectureid == Lectureid).FirstOrDefault()?.End)
+            {
+
+                return true;
+            }
+            return false;
+            
+            
+            }
+        
+        
+        
+        
+        ).ToList();
+
+
+
         if (users.IsNullOrEmpty())
         {
 
@@ -295,9 +357,10 @@ public class LectureManger : ILectureManger
 
       var lectures =    _eLearningContext.UserLectures.Where(x=>(x.Start==null || x.End> Time.GetCurrentDateTime())  && x.StudentId==userid && x.Lecture.Classid==classid).Include(x=>x.Lecture).Include(x=> x.Lecture.VideoParts).Include(x=>x.Lecture.Quiz).Include(x=>x.Lecture.Assighnment).OrderBy(x=>x.Lecture.number);
 
-        return lectures.Select(x => new Selectdto { id = x.Id, name = x.Lecture.Header }).ToList();
+        return lectures.Select(x =>  new Selectdto { id = x.Id, name = x.Lecture.Header }).ToList();
 
-      
+
+
 
     }
 }

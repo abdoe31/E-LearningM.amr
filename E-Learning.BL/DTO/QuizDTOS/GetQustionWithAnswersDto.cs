@@ -11,6 +11,7 @@ namespace E_Learning.BL;
     public int? Quizid { get; set; }
     public string? QuizHeader { get; set; }
     public QuizType QuizType { get; set; }
+    public int? QuizGrade { get; set; }  
 
 
     public List<GetQuestionsDto> getQuestionsDtos { get; set; } = new List<GetQuestionsDto>();
@@ -21,6 +22,7 @@ public class GetQuestionsDto
     public int? Quizid { get; set; }
     public int? QuestionID { get; set; }
     public  QuestionType?   questionType { get; set; }
+    public int ?Grade { get; set; }
 
     public string? QuestionHeader { get; set; }
 

@@ -80,6 +80,11 @@ namespace E_Learning.DAL
             return _eLearningContext.Classes.Where(x => x.Id == Classid).Include(x => x.Users).FirstOrDefault();
         
         }
+        public Class GetStudentsByClassToLecture(int Classid)
+        {
+            return _eLearningContext.Classes.Where(x => x.Id == Classid).Include(x => x.Users).ThenInclude(x=>x.UserLectures).FirstOrDefault();
+
+        }
 
 
 

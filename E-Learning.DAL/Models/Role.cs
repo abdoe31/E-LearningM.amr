@@ -20,7 +20,7 @@ namespace E_Learning.DAL
     {
         public static  DateTime GetCurrentDateTime()
         {
-            return DateTime.UtcNow.AddHours(3);
+            return DateTime.UtcNow.AddHours(2);
 
         }
     }

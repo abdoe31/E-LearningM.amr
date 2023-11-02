@@ -15,10 +15,11 @@ public class LectureAttendanceDTO
 }
 
 
+
 public class UserLectureAttendance
 {
-
-    public string UserName { get; set; }
-    public DateTime start { get; set; }
-    public DateTime end { get; set; }
+    public int? id { get; set; }
+    public string? UserName { get; set; }
+    public DateTime? start { get; set; }
+    public DateTime? end { get; set; }
 }

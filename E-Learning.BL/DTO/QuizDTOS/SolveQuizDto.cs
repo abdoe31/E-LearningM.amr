@@ -20,5 +20,6 @@ public class UserAnswerDto
 
     public int QuestionId { get; set;}
     public int AnswerID { get; set; }
+    public int? Grade { get; set; }
 
 }

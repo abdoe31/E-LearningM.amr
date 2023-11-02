@@ -10,6 +10,7 @@ namespace E_Learning.BL
     public class AddquestionDto
     {
         public string? Header { get; set; }
+        public int   Grade {  get; set; }    
         public QuestionType? Type { get; set; }
         public int? QuizId { get; set; }
         public List <answerDTO> answerDTOs { get; set; } = new List <answerDTO> ();

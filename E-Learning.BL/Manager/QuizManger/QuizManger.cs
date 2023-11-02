@@ -55,7 +55,7 @@ public class QuizManger : IQuizManger
         {
             Header = addquistionDto.Header,
             QuizId = addquistionDto.QuizId,
-            Type = addquistionDto.Type,
+            Type = addquistionDto.Type, Grade = addquistionDto.Grade
 
 
         };
@@ -125,6 +125,7 @@ public class QuizManger : IQuizManger
         }
 
         question.Header = updatequestionDto.Header;
+        question.Grade= updatequestionDto.Grade;
 
 
        
@@ -161,7 +162,8 @@ public class QuizManger : IQuizManger
         {
             Quizid = quiz.Id,
             QuizHeader = quiz.Header,
-            QuizType = quiz.quizType
+            QuizType = quiz.quizType 
+            , QuizGrade= quiz.QuizGrade   
 
 
         ,
@@ -169,11 +171,11 @@ public class QuizManger : IQuizManger
             {
                 Quizid = x.QuizId,
                 QuestionID = x.Id,
-                QuestionHeader = x.Header, questionType= x.Type,
+                QuestionHeader = x.Header, questionType = x.Type ,  Grade = x.Grade,
 
 
 
-                getAnswersDtos = x.Answers.Select(y => new GetAnswersDto { AnswerID = y.Id, Header = y.Header, QuestionID = x.Id, Right = x.RightAnswerid == y.Id ? true : false }).OrderBy(y=>y.Header)     .ToList()
+                getAnswersDtos = x.Answers.Select(y => new GetAnswersDto { AnswerID = y.Id, Header = y.Header, QuestionID = x.Id, Right = x.RightAnswerid == y.Id ? true : false }).OrderBy(y => y.Header).ToList()
             }).OrderBy(x => Guid.NewGuid()).ToList()
         };
 

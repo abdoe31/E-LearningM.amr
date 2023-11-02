@@ -61,11 +61,11 @@ namespace E_Learning.API.Controllers
             {
                 Email = pass+"Test@test.com",
                 Active = addStudentDto.Active,
-                FirstName = addStudentDto.FirstName,
-                LastName = addStudentDto.LastName,
-                StudentPhoneNumber = addStudentDto.PhoneNumber,
-                SecondName = addStudentDto.SecondName,
-                ParentPhoneNumber = addStudentDto.ParentPhoneNumber,
+                FirstName = addStudentDto.FirstName.Trim(),
+                LastName = addStudentDto.LastName.Trim(),
+                StudentPhoneNumber = addStudentDto.PhoneNumber.Trim(),
+                SecondName = addStudentDto.SecondName.Trim(),
+                ParentPhoneNumber = addStudentDto.ParentPhoneNumber.Trim(),
                 Pasword = pass,
                 Role = addStudentDto.Role
                 
@@ -307,8 +307,7 @@ namespace E_Learning.API.Controllers
         public IActionResult gettime()
         {
 
-
-            return Ok(Time.GetCurrentDateTime().ToString());
+            return Ok(  DateTime.Now);
 
 
 

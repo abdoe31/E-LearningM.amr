@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -19,9 +20,29 @@ public partial class Quize
     public DateTime? EndTime { get; set; }
 
     public int? Duration { get; set; }
-    public QuizType  quizType { get; set; } 
+    public QuizType quizType { get; set; }
     public string? UpdatedBy { get; set; }
+    public int ? QuizGrade { get { 
+         if (!Questions.IsNullOrEmpty())
+            {
 
+                return Questions.Select(x =>
+                {
+
+                    if (x.Grade != null)
+                    {
+
+                        return x.Grade; 
+                    }
+                    return 1;
+                }
+                
+                
+                ).Sum();
+            }
+            return 0;
+        
+        } }
     public DateTime? Updatedat { get; set; }
 
     public virtual ICollection<Lecture> Lectures { get; set; } = new List<Lecture>();

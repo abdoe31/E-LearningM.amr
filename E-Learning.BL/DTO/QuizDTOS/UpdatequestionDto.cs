@@ -10,6 +10,7 @@ namespace E_Learning.BL
     {
         public int Id { get; set; }
         public string? Header { get; set; }
+        public int Grade { get; set; }  
         public List<UpdateanswerDTO> answerDTOs { get; set; } = new List<UpdateanswerDTO>();
     }
 

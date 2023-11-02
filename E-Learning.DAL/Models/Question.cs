@@ -15,7 +15,7 @@ public partial class Question
     public int? RightAnswerid { get; set; }
 
     public int? QuizId { get; set; }
-    public int? Answerid { get; set; }
+    public int? Grade { get; set; } = 1; 
     public QuestionType? Type { get; set; }
 
     public string? UpdatedBy { get; set; }

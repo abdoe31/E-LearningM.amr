@@ -25,4 +25,7 @@ public partial class UserQuiz
     public virtual User? Student { get; set; }
 
     public virtual ICollection<UserAnswer> UserAnswers { get; set; } = new List<UserAnswer>();
+
+
+
 }

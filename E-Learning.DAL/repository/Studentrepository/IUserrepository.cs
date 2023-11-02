@@ -17,7 +17,7 @@ namespace E_Learning.DAL;
 
     public Class GetStudentsByClass(int Classid);
 
-
+    public  Class GetStudentsByClassToLecture(int Classid);
 
       ICollection<User> GetStudentsByYear(int yearid);
 
