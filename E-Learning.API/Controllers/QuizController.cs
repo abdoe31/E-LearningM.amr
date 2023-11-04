@@ -73,8 +73,6 @@ namespace E_Learning.API.Controllers
 
 
 
-
-
         [HttpGet("GetAllQAByQuiz/{Quizid}")]
         public ActionResult<GetQustionWithAnswersDto> GetAllQAByQuiz(int Quizid)
         {
@@ -84,43 +82,44 @@ namespace E_Learning.API.Controllers
 
         }
 
+        [HttpPost("Adduseranswer")]
 
+        public IActionResult Adduseranswer(useranswerdt UserAnswerDto)
+        {
+            var useranswer = eLearningContext.UserAnswers.Where(x => x.UserId == UserAnswerDto.userid && x.UserQuizId == UserAnswerDto.userquizid && x.QuestionId == UserAnswerDto.questionid).FirstOrDefault();
 
-        [HttpPost("StudentSolveQuiz")]
+            if (useranswer!=null)
+            {
 
+                useranswer.Answerid = UserAnswerDto.answerid;
+                useranswer.QuestionId= UserAnswerDto.questionid;
+                useranswer.UserId= UserAnswerDto.userid;
+                eLearningContext.UserAnswers.Update(useranswer);
+
+            }
+            if (useranswer == null)
+            {
+
+                useranswer = new UserAnswer { QuestionId = UserAnswerDto.questionid, Answerid = UserAnswerDto.answerid, UserId = UserAnswerDto.userid , UserQuizId=UserAnswerDto.userquizid };
+
+                eLearningContext.UserAnswers.Add(useranswer);
+            }
+
+            return Ok ( eLearningContext.SaveChanges());
+
+        }
+            [HttpPost("StudentSolveQuiz")]
         public IActionResult StudentSolveQuiz( SolveQuizDto solveQuizDto )
         {
 
-            int Grade = 0;
-            List<UserAnswer> userAnswers = new List<UserAnswer>();
-            foreach (var R in solveQuizDto.userAnswerDtos)
-            {
-                var qustion = eLearningContext.Questions.FirstOrDefault(x => x.Id == R.QuestionId);
-                UserAnswer userAnswer = new UserAnswer { Answerid = R.AnswerID, QuestionId = qustion.Id, Right = R.AnswerID == qustion.RightAnswerid , UserId= solveQuizDto.Userid };
-                userAnswers.Add(userAnswer);
-                if (userAnswer.Right == true)
-                {
-                    if (R.Grade == null)
-                    {
-
-                        Grade += 1;
-                    }
-                    else
-                    {
-                        Grade += (int)R.Grade;
-                    }
-                }
-            }
             var quiz = eLearningContext.Quizes.Where(x => x.Id == solveQuizDto.Quizid).Include(x=>x.Questions).Include(x=>x.Lectures).FirstOrDefault();
-            var userquiz = eLearningContext.UserQuizzes.Include(x=>x.Student).ThenInclude(x=>x.UserLectures).ThenInclude(x=>x.Lecture).Where(x=>x.Quizid== solveQuizDto.Quizid && x.Studentid==solveQuizDto.Userid).Include(x=>x.Student).ThenInclude(x=>x.UserLectures).Include(x=>x.UserAnswers).FirstOrDefault();
+            var userquiz = eLearningContext.UserQuizzes.Where(x => x.Quizid == solveQuizDto.Quizid && x.Studentid == solveQuizDto.Userid).Include(x=>x.UserAnswers).ThenInclude(x=>x.Question).Include(x=>x.Student).ThenInclude(x=>x.UserLectures).ThenInclude(x=>x.Lecture).Include(x=>x.Student).ThenInclude(x=>x.UserLectures).FirstOrDefault();
            if (userquiz == null)
             {
 
                 return BadRequest();
             }
-            userquiz.End = Time.GetCurrentDateTime();
-            userquiz.UserAnswers = userAnswers;
-            userquiz.Grade = Grade;
+            userquiz.End = DateTime.Now;
 
             if (quiz.quizType== QuizType.lecture)
             {
@@ -132,10 +131,9 @@ namespace E_Learning.API.Controllers
 
             }
 
-            eLearningContext.UserQuizzes.Update(userquiz);
 
             var states = eLearningContext.SaveChanges();
-            return Ok(new { UserGrade = userquiz.Grade, numberofQuistion = quiz.QuizGrade, colEfected = states }) ;
+            return Ok(new { UserGrade = userquiz.GetUserQuizGrade(), numberofQuistion = quiz.QuizGrade, colEfected = states }) ;
         }
 
         [HttpDelete("DeleteAnswer/{id}") ]
@@ -231,10 +229,9 @@ namespace E_Learning.API.Controllers
                 if (quiz.quizType== QuizType.lecture)
                 {
 
-                    if (UserQuiz.Grade == null)
+                    if (userlect.QuizSolved != true)
                     {
 
-                        UserQuiz.Grade = 0;
                         userlect.QuizSolved = true;
                         eLearningContext.SaveChanges();
                     }
@@ -244,7 +241,7 @@ namespace E_Learning.API.Controllers
                 }
                 else
                 {
-                    var end = quiz.EndTime.Value.AddHours(2);
+                    var end = quiz.EndTime.Value;
                     if (end <= Time.GetCurrentDateTime())
                     {
 
@@ -275,7 +272,7 @@ namespace E_Learning.API.Controllers
         public IActionResult GetQuizToSolve(checkquizSolved checkquizSolved)
         {
             var quiz = eLearningContext.Quizes.Where(x => x.Id == checkquizSolved.quizid).Include(x=>x.Lectures).Include(x => x.UserQuizzes).ThenInclude(x=>x.UserAnswers).FirstOrDefault();
-
+            var endtime= quiz.EndTime;
             if (quiz == null)
             {
 
@@ -284,25 +281,32 @@ namespace E_Learning.API.Controllers
             var UserQuiz = quiz.UserQuizzes.Where(x => x.Studentid == checkquizSolved.Userid).FirstOrDefault();
             if (UserQuiz == null)
             {
+                 if (quiz.quizType == QuizType.Month && DateTime.Now.AddMinutes((int)quiz.Duration)> quiz.EndTime)
+                {
+                    UserQuiz = new UserQuiz { Quizid = checkquizSolved.quizid, Quiz = quiz, Studentid = checkquizSolved.Userid, Start = Time.GetCurrentDateTime(), End = endtime };
 
-                UserQuiz= new UserQuiz {  Quizid= checkquizSolved.quizid ,  Quiz=quiz, Studentid=checkquizSolved.Userid ,Start=Time.GetCurrentDateTime(), End= DateTime.Now.AddMinutes((int)quiz.Duration)};
+                }
+                else
+                {
+                    UserQuiz = new UserQuiz { Quizid = checkquizSolved.quizid, Quiz = quiz, Studentid = checkquizSolved.Userid, Start = Time.GetCurrentDateTime(), End = DateTime.Now.AddMinutes((int)quiz.Duration) };
+
+                }
 
                 eLearningContext.UserQuizzes.Add(UserQuiz);
                 eLearningContext.SaveChanges();
-                return Ok(  new { start = UserQuiz.Start, end = UserQuiz.End, quiestions = _quizManger.GetQustionWithAnswers(checkquizSolved.quizid) });
+                return Ok(  new { start = UserQuiz.Start, end = UserQuiz.End, l = 1, quiestions = _quizManger.GetQustionWithAnswers(checkquizSolved.quizid)  , userquiz = UserQuiz.Id});
             
             }
 
-            if (UserQuiz.Grade == null &&  UserQuiz.End  <= Time.GetCurrentDateTime())
+            if (UserQuiz.End  <= Time.GetCurrentDateTime())
             {
-                UserQuiz.Grade= !UserQuiz.UserAnswers.IsNullOrEmpty() ? UserQuiz.UserAnswers.Count(x => x.Right == true) : 0;
+             //   UserQuiz.Grade= !UserQuiz.UserAnswers.IsNullOrEmpty() ? UserQuiz.UserAnswers.Count(x => x.Right == true) : 0;
 
-                eLearningContext.SaveChanges();
 
                 return BadRequest("quiz is finished ");
             }
 
-            return Ok(new { start = UserQuiz.Start, end = UserQuiz.End  , quiestions = _quizManger.GetQustionWithAnswers(checkquizSolved.quizid) });
+            return Ok(new { start = UserQuiz.Start, end = UserQuiz.End , l=5 , quiestions = _quizManger.GetQustionWithAnswers2(UserQuiz.Id)  , userquiz = UserQuiz.Id });
 
         }
 
@@ -313,6 +317,7 @@ namespace E_Learning.API.Controllers
         {
 
             var quiz = eLearningContext.UserQuizzes.Where(x => x.Quizid == checkquizSolved.quizid && x.Studentid == checkquizSolved.Userid).Include(x=>x.Quiz).Include(x => x.UserAnswers).ThenInclude(x => x.answer).ThenInclude(x=>x.Question).ThenInclude(x => x.RightAnswer).FirstOrDefault();
+
 
 
             var outquiz = new GetUserQuizAnswersDto { QuizHeader = quiz.Quiz.Header, Grade = quiz.Grade.ToString(), answers = quiz.UserAnswers.Select(x => {
@@ -351,6 +356,64 @@ namespace E_Learning.API.Controllers
             return Ok(outquiz);
         }
 
+
+
+
+
+        [HttpPost("GetUserQuizAnswers2")]
+        public IActionResult GetUserQuizAnswers2(checkquizSolved checkquizSolved)
+        {
+
+            var quiz = eLearningContext.UserQuizzes.Where(x => x.Quizid == checkquizSolved.quizid && x.Studentid == checkquizSolved.Userid).Include(x => x.Quiz).Include(x => x.UserAnswers).ThenInclude(x => x.answer).ThenInclude(x => x.Question).ThenInclude(x => x.RightAnswer).FirstOrDefault();
+
+            var quiz1 = eLearningContext.Quizes.Where(x => x.Id == checkquizSolved.quizid).Include(x => x.UserQuizzes.Where(x=>x.Studentid==checkquizSolved.Userid) ).ThenInclude(x => x.UserAnswers).ThenInclude(x=>x.answer).Include(x => x.Questions).ThenInclude(x=>x.RightAnswer).FirstOrDefault();
+            var userquiz = quiz1.UserQuizzes.FirstOrDefault();
+            if (userquiz == null) {
+
+                return BadRequest();
+                    }
+            var outquiz = new GetUserQuizAnswersDto
+            {
+                QuizHeader = quiz1.Header,
+                Grade = quiz1.UserQuizzes.FirstOrDefault().GetUserQuizGrade().ToString(),
+                answers = quiz1.Questions.Select(x => {
+                    var outuseranswe = new Answers();
+                    var userans = userquiz.UserAnswers.Where(y => y.QuestionId == x.Id ).FirstOrDefault();
+                    if (userans == null)
+                    {
+                        outuseranswe.RightAnswer = x.RightAnswer.Header;
+                        outuseranswe.WrongAnswer = "not answered";
+                        outuseranswe.AnswerType = "W";
+
+                    }
+                    
+                   else if ( userans.Answerid == x.RightAnswerid)
+                    {
+                        outuseranswe.RightAnswer = x.RightAnswer.Header;
+                        outuseranswe.WrongAnswer = null;
+                        outuseranswe.AnswerType = "R";
+
+
+                    }
+                    else if (userans.Answerid != x.RightAnswerid)
+                    {
+                        outuseranswe.RightAnswer = x.RightAnswer.Header;
+                        outuseranswe.WrongAnswer = userans.answer.Header;
+                        outuseranswe.AnswerType = "W";
+
+
+                    }
+                    outuseranswe.questionHeader = x.Header;
+                    outuseranswe.Grade = x.Grade != null ? x.Grade : 1;
+
+                    outuseranswe.questionType = (QuestionType)x.Type;
+                    return outuseranswe;
+
+                }).ToList()
+            };
+
+            return Ok(outquiz);
+        }
 
         [HttpGet("GetMonthExams/{userid}")]
         public IActionResult GetMonthExams(string userid)
@@ -391,20 +454,20 @@ namespace E_Learning.API.Controllers
         [HttpGet("GetUserQuizesResult/{userid}")]
         public IActionResult GetUserQuizesResult(string userid)
         {
-            var userquiz = eLearningContext.UserQuizzes.Where(x => x.Studentid == userid).Include(x=>x.Student).Include(x=>x.Quiz);
+            var userquiz = eLearningContext.UserQuizzes.Where(x => x.Studentid == userid).Include(x=>x.UserAnswers).ThenInclude(x=>x.Question).Include(x=>x.Student).Include(x=>x.Quiz);
 
-            return  Ok (userquiz.Select(x => new { QuizId=x.Quizid, Username = $"{x.Student.FirstName} {x.Student.SecondName} {x.Student.LastName}  ", quizname = x.Quiz.Header, quizGrade = x.Grade }));
+            return  Ok (userquiz.Select(x => new { QuizId=x.Quizid, Username = $"{x.Student.FirstName} {x.Student.SecondName} {x.Student.LastName}  ", quizname = x.Quiz.Header, quizGrade = x.GetUserQuizGrade() }));
         }
 
 
 
 
-        [HttpGet("GetQuizResult/{userid}")]
+        [HttpGet("GetQuizResult/{quizid}")]
         public IActionResult GetQuizResult(int quizid)
         {
-            var userquiz = eLearningContext.UserQuizzes.Where(x => x.Quizid == quizid).Include(x => x.Student).Include(x => x.Quiz);
+            var userquiz = eLearningContext.UserQuizzes.Where(x => x.Quizid == quizid).Include(x=>x.UserAnswers).ThenInclude(x=>x.Question).Include(x => x.Student).Include(x => x.Quiz);
 
-            return Ok(userquiz.Select(x => new { Username = $"{x.Student.FirstName} {x.Student.SecondName} {x.Student.LastName}  ", quizname = x.Quiz.Header, quizGrade = x.Grade }));
+            return Ok(userquiz.Select(x => new { userid=x.Student.Id, quizid=x.Quiz.Id , userquiz=x.Id, Username = $"{x.Student.FirstName} {x.Student.SecondName} {x.Student.LastName}  ", quizname = x.Quiz.Header, start = x.Start, end = x.End , time = (x.End - x.Start).ToString() ,  quizGrade = x.GetUserQuizGrade() }).ToList().OrderByDescending(y=>y.quizGrade).ToList());
         }
 
 
@@ -424,11 +487,33 @@ namespace E_Learning.API.Controllers
             };
         }
 
+
+        [HttpDelete("deleteuserquiz/{quizid}")]
+        public IActionResult deleteuserquiz(int quizid)
+        {
+
+
+
+        return Ok (    _quizManger.DeleteUserQuiz(quizid));
+        }
+
+
+
+
     }
 
 
 
- 
+
+
+    public class useranswerdt
+    {
+
+
+        public int userquizid { get; set; }
+        public int questionid { get; set; }
+        public int answerid { get; set; }
+        public string userid { get; set; } }
 
     public class GetUserQuizAnswersDto
     {

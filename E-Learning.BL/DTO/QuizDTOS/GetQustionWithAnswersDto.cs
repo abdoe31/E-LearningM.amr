@@ -23,7 +23,7 @@ public class GetQuestionsDto
     public int? QuestionID { get; set; }
     public  QuestionType?   questionType { get; set; }
     public int ?Grade { get; set; }
-
+    public int? usernswer { get; set; }
     public string? QuestionHeader { get; set; }
 
     public List<GetAnswersDto>   getAnswersDtos { get; set; } = new List<GetAnswersDto>();

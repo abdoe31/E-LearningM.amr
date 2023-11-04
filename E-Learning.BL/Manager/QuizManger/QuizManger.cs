@@ -183,4 +183,89 @@ public class QuizManger : IQuizManger
     }
 
 
+
+
+    public GetQustionWithAnswersDto GetQustionWithAnswers2(int userquizix)
+    {
+
+        var quiz = _eLearningContext.UserQuizzes.Where(x => x.Id == userquizix).Include(x => x.Quiz).ThenInclude(x => x.Questions).ThenInclude(x => x.Answers).Include(x => x.Quiz.Questions).Include(x=>x.UserAnswers).FirstOrDefault();
+
+        if (quiz == null)
+        {
+            return null;
+        }
+
+
+        var getQuiz = new GetQustionWithAnswersDto
+        {
+            Quizid = quiz.Id,
+            QuizHeader = quiz.Quiz?.Header,
+            QuizType = quiz.Quiz.quizType
+            ,
+            QuizGrade = quiz.Quiz.QuizGrade
+
+
+        ,
+            getQuestionsDtos = quiz.Quiz.Questions.Select(x => new GetQuestionsDto
+            {
+                Quizid = x.QuizId,
+                QuestionID = x.Id,
+                QuestionHeader = x.Header,
+                questionType = x.Type,
+                Grade = x.Grade,
+
+                usernswer = quiz.UserAnswers?.Where(q => q.QuestionId == x.Id).FirstOrDefault()?.Answerid,
+
+                getAnswersDtos = x.Answers.Select(y => new GetAnswersDto { AnswerID = y.Id, Header = y.Header, QuestionID = x.Id, Right = x.RightAnswerid == y.Id ? true : false }).OrderBy(y => y.Header).ToList()
+            }).OrderBy(x => Guid.NewGuid()).ToList()
+        };
+
+        return getQuiz;
+    }
+
+
+    public int DeleteUserQuiz(int userquizid)
+    {
+        var quiz =  _eLearningContext.UserQuizzes.Where(x => x.Id == userquizid).Include(x=>x.UserAnswers).FirstOrDefault();
+        var ans = quiz.UserAnswers.ToList();
+        if (quiz == null)
+        {
+
+            return -1;
+        }
+        _eLearningContext.UserAnswers.RemoveRange(ans);
+
+        _eLearningContext.UserQuizzes.Remove(quiz);
+
+        return _eLearningContext.SaveChanges();
+    }
+    public   int? GetUserQuizGrade(  UserQuiz userQuiz)
+    {
+        var greade = userQuiz.UserAnswers.Sum(x =>
+        {
+            if (x.Question == null)
+            {
+                return 0;
+            }
+            if (x.Answerid == x.Question.RightAnswerid)
+            {
+                return x.Question.Grade;
+            }
+            else
+            {
+                return 0;
+            }
+
+
+
+
+        });
+
+
+        return greade;
+    }
+
+
+
+
 }

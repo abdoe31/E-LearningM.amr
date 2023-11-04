@@ -19,6 +19,10 @@ public interface IQuizManger
     public int UpdateQuestion(UpdatequestionDto addquistionDto);
    
     public GetQustionWithAnswersDto GetQustionWithAnswers(int Quizid );
+    public GetQustionWithAnswersDto GetQustionWithAnswers2(int userquizid);
+
+    public int DeleteUserQuiz(int userquizid);
+    public  int? GetUserQuizGrade(UserQuiz userQuiz);
 
    // public int UpdateQUIZ(UpdateQuizDto addquistionDto);
 

@@ -307,7 +307,7 @@ namespace E_Learning.API.Controllers
         public IActionResult gettime()
         {
 
-            return Ok(  DateTime.Now);
+            return Ok(   new { timenow = DateTime.Now  , time= Time.GetCurrentDateTime()});
 
 
 
