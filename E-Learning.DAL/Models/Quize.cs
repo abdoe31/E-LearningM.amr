@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using E_Learning.DAL.Models;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -50,7 +51,14 @@ public partial class Quize
     public virtual ICollection<Question> Questions { get; set; } = new List<Question>();
 
     public virtual ICollection<UserQuiz> UserQuizzes { get; set; } = new List<UserQuiz>();
+
+
+    public virtual ICollection<UserQuizAcess>  UserQuizAcesses { get; set; } = new List<UserQuizAcess>();
+
 }
+
+
+
 public enum QuizType
 {
 

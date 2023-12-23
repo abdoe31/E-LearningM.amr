@@ -11,6 +11,7 @@ public class GetCodesDTO
 
     public int CodeId { get; set; }
     public string?  Code { get; set; }
+    public string? Lecturename { get; set; }
 
     public string? UserName  { get; set; }
 

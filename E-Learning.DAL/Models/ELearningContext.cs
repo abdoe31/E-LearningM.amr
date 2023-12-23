@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
+using E_Learning.DAL.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +20,7 @@ public partial class ELearningContext : IdentityDbContext
     }
 
     public virtual DbSet<Answer> Answers { get; set; }
+    public virtual DbSet<UserQuizAcess> UserQuizAcess { get; set; }
 
     public virtual DbSet<Assighment> Assighments { get; set; }
 
@@ -43,6 +46,7 @@ public partial class ELearningContext : IdentityDbContext
     public virtual DbSet<UserLecture> UserLectures { get; set; }
 
     public virtual DbSet<UserQuiz> UserQuizzes { get; set; }
+    public virtual DbSet<Videofiles>  Videofiles { get; set; }
 
     public virtual DbSet<VideoPart> VideoParts { get; set; }
 
@@ -183,6 +187,13 @@ public partial class ELearningContext : IdentityDbContext
             entity.Property(e => e.Header).HasColumnName("header");
             entity.Property(e => e.StartTime).HasColumnType("datetime");
         });
+
+
+        modelBuilder.Entity<UserQuizAcess>(entity =>
+        {
+            entity.HasOne<Quize>(x =>x.Quize).WithMany(x => x.UserQuizAcesses).HasForeignKey(x => x.QuizeId);
+        });
+
 
         modelBuilder.Entity<User>(entity =>
         {
@@ -343,6 +354,8 @@ public partial class ELearningContext : IdentityDbContext
                 .HasConstraintName("FK_videoParts_Lecture").OnDelete(DeleteBehavior.Cascade)
 ;
         });
+
+
 
         modelBuilder.Entity<Year>(entity =>
         {

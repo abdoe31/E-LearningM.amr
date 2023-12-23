@@ -7,7 +7,7 @@ namespace E_Learning.API.Controllers.blob
 
           Task<Uri> UploadFileBlobAsync(string blobContainerName, Stream content, string contentType, string fileName);
 
-
+        Task<bool> DeleteFile(string blobContainerName, string fileName);
     }
 
 }

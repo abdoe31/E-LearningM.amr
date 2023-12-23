@@ -144,7 +144,7 @@ namespace E_Learning.API.Controllers
                 SecurityAlgorithms.HmacSha256Signature);
 
             // Putting All together
-            DateTime exp = Time.GetCurrentDateTime().AddDays(500);
+            DateTime exp = DateTime.Now.AddDays(500);
             JwtSecurityToken token = new JwtSecurityToken(
                     claims: claimsList,
                     signingCredentials: signingCredentials,
@@ -307,7 +307,7 @@ namespace E_Learning.API.Controllers
         public IActionResult gettime()
         {
 
-            return Ok(   new { timenow = DateTime.Now  , time= Time.GetCurrentDateTime()});
+            return Ok(   new { timenow = DateTime.Now  , time= DateTime.Now});
 
 
 
@@ -342,7 +342,6 @@ namespace E_Learning.API.Controllers
             }
 
         }
-
 
 
 

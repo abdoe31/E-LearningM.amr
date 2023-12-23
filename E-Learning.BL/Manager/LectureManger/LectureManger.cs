@@ -46,7 +46,7 @@ public class LectureManger : ILectureManger
             x.Lectureid == item.Lectureid).FirstOrDefault();
             if(oldaccess != null)
             {
-                if (oldaccess.Start == null || oldaccess.End > Time.GetCurrentDateTime())
+                if (oldaccess.Start == null || oldaccess.End > DateTime.Now)
                 {
 
                     return -2;
@@ -126,7 +126,7 @@ public class LectureManger : ILectureManger
     {
         int l = 6;
 
-        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         var random = new Random();
 
         var codes = new List<LectureCode>();
@@ -136,21 +136,73 @@ public class LectureManger : ILectureManger
         {
 
             var code = new string(Enumerable.Repeat(chars, l).Select(s => s[random.Next(s.Length)]).ToArray());
+
+            var codeexist = _eLearningContext.LectureCodes.Any(x => x.Code == code);
+
+            while(codeexist)
+            {
+                code = new string(Enumerable.Repeat(chars, l).Select(s => s[random.Next(s.Length)]).ToArray());
+                codeexist = _eLearningContext.LectureCodes.Any(x => x.Code == code);
+            }
+
             var one = new LectureCode();
 
-            one.Lectureid = postCodegenerateddto.Lectureid;
+
+
+            if (postCodegenerateddto.CodeTybe == CodeTybe.Super)
+            {
+                one.CodeTybe = CodeTybe.Super;
+
+
+
+            }else if (postCodegenerateddto.CodeTybe == CodeTybe.Master)
+            {
+                one.CodeTybe = CodeTybe.Master;
+                one.Classid = postCodegenerateddto.classid;
+
+
+
+            }
+            else if (postCodegenerateddto.CodeTybe == CodeTybe.lecture)
+            {
+                one.CodeTybe = CodeTybe.lecture;
+                one.Lectureid = postCodegenerateddto.Lectureid;
+
+
+
+            }
+
+
+
+
             one.Code = code;
+            one.GeneratedAt = DateTime.Now; 
+            
             one.duration = postCodegenerateddto.duration;
+            
             one.QuizRequired = postCodegenerateddto.QuizRequird;
+            
             codes.Add(one);
         }
-        var lect = _eLearningContext.Lectures.Where(x => x.Id == postCodegenerateddto.Lectureid).FirstOrDefault();
+        Lecture  lect = null; 
+        Class cl = null;
+        if (postCodegenerateddto.CodeTybe == CodeTybe.lecture)
+        {
+            lect = _eLearningContext.Lectures.Where(x => x.Id == postCodegenerateddto.Lectureid).Include(x=>x.Class).FirstOrDefault();
+            cl = lect.Class;
+
+        }
+        else    if (postCodegenerateddto.CodeTybe == CodeTybe.Master)
+        {
+            cl = _eLearningContext.Classes.Where(x => x.Id == postCodegenerateddto.classid).FirstOrDefault();
+
+        }
 
 
         _eLearningContext.LectureCodes.AddRange(codes);
         _UnitOfWork.SaveChanges();
 
-        return codes.Select(x => new Codegenerateddto { LectureName = lect.Header, Code = x.Code }).ToList();
+        return codes.Select(x => new Codegenerateddto { LectureName = lect != null ? lect.Header : null , Code = x.Code  , ClassName= cl !=null ? cl.Name : null , Codetype= x.CodeTybe.ToString() }).ToList();
 
     }
 
@@ -175,6 +227,34 @@ public class LectureManger : ILectureManger
     }
 
 
+
+    public List<GetCodesDTO> GetCodesv2()
+
+
+    {
+
+        var codes = _eLearningContext.LectureCodes.Include(x => x.Student);
+
+        if (codes.IsNullOrEmpty())
+        {
+            return null;
+        }
+        return codes.Select(x => new GetCodesDTO
+        {
+            Code = x.Code,
+            CodeId = x.Id,
+            Used = x.Used,
+            Usedate = x.Usedate,
+              Lecturename = x.Lecture != null ? $"{x.Lecture.Header}" : null
+            ,UserName = x.Student != null ? $"{x.Student.FirstName}  {x.Student.SecondName}  {x.Student.LastName}" : null
+        }).OrderByDescending(x=>  x.Used) .ToList();
+
+
+
+    }
+
+
+
     public LectureAttendanceDTO GetLectureAttendance(int lectureId)
     {
 
@@ -197,7 +277,7 @@ public class LectureManger : ILectureManger
             UserName = $"{x.Student.FirstName}  {x.Student.SecondName}  {x.Student.LastName}",
              start =x.Start,
             end = x.End
-            ,  id= x.Id
+            ,  id= x.Id  , accesstype = x.AcessType.ToString()
         }
 
         ).ToList()
@@ -238,7 +318,7 @@ public class LectureManger : ILectureManger
                 return true;
 
             }
-                if  (x.UserLectures.Where(x => x.Lectureid == Lectureid).FirstOrDefault()?.Start != null && Time.GetCurrentDateTime() > x.UserLectures.Where(x => x.Lectureid == Lectureid).FirstOrDefault()?.End)
+                if  (x.UserLectures.Where(x => x.Lectureid == Lectureid).FirstOrDefault()?.Start != null && DateTime.Now > x.UserLectures.Where(x => x.Lectureid == Lectureid).FirstOrDefault()?.End)
             {
 
                 return true;
@@ -305,6 +385,22 @@ public class LectureManger : ILectureManger
 
     }
 
+
+    public int UpdateLecture2(UpdateLectureDto updateLectureDto)
+    {
+        var lecture = _eLearningContext.Lectures.Where(x => x.Id == updateLectureDto.LectureId).FirstOrDefault();
+
+        if (lecture == null) { return -1; }
+
+        lecture.Classid = updateLectureDto.Classid;
+        lecture.Header = updateLectureDto.Header;
+        lecture.Quizid = updateLectureDto.Quizid;
+        lecture.Assighnmentid = updateLectureDto.Assighnmentid;
+        return _UnitOfWork.SaveChanges();
+
+    }
+
+
     public int AcessLectureByCode(string code, string userid)
     {
 
@@ -318,7 +414,7 @@ public class LectureManger : ILectureManger
         lecturecode.StudentId = userid;
 
         lecturecode.Used = true;
-        lecturecode.Usedate = Time.GetCurrentDateTime();
+        lecturecode.Usedate = DateTime.Now;
 
         _UnitOfWork._Userrepository.GetUser(userid).UserLectures.Add( new UserLecture {  Lectureid=lecturecode.Lectureid , AcessType= AcessType.Code,
             Duration= lecturecode.duration, StudentId=  userid , QuizRequired= (bool)lecturecode.QuizRequired 
@@ -326,15 +422,38 @@ public class LectureManger : ILectureManger
         return _UnitOfWork.SaveChanges() ; 
     }
 
+
+
+
+    public int AcessLectureByCodev2(LectureCode lecturecode, string userid , int lectureidd)
+    {
+
+
+        lecturecode.StudentId = userid;
+
+        lecturecode.Used = true;
+        lecturecode.Usedate = DateTime.Now;
+        lecturecode.Lectureid = lectureidd;
+        _UnitOfWork._Userrepository.GetUser(userid).UserLectures.Add(new UserLecture
+        {
+            Lectureid = lectureidd,
+            AcessType = AcessType.Code,
+            Duration = lecturecode.duration,
+            StudentId = userid,
+            QuizRequired = (bool)lecturecode.QuizRequired
+        });
+        return _UnitOfWork.SaveChanges();
+    }
+
     public StartendLecture startWatching(int userLectureid)
     {
         var userlecture = _eLearningContext.UserLectures.Where(x=>x.Id==userLectureid).FirstOrDefault();
 
-        userlecture.Start = Time.GetCurrentDateTime();
+        userlecture.Start = DateTime.Now;
 
         if(userlecture.Duration != null)
         {
-            userlecture.End = Time.GetCurrentDateTime().AddDays((int)userlecture.Duration);
+            userlecture.End = DateTime.Now.AddDays((int)userlecture.Duration);
 
 
         }
@@ -355,7 +474,7 @@ public class LectureManger : ILectureManger
     {
 
 
-      var lectures =    _eLearningContext.UserLectures.Where(x=>(x.Start==null || x.End> Time.GetCurrentDateTime())  && x.StudentId==userid && x.Lecture.Classid==classid).Include(x=>x.Lecture).Include(x=> x.Lecture.VideoParts).Include(x=>x.Lecture.Quiz).Include(x=>x.Lecture.Assighnment).OrderBy(x=>x.Lecture.number);
+      var lectures =    _eLearningContext.UserLectures.Where(x=>(x.Start==null || x.End> DateTime.Now)  && x.StudentId==userid && x.Lecture.Classid==classid).Include(x=>x.Lecture).Include(x=> x.Lecture.VideoParts).Include(x=>x.Lecture.Quiz).Include(x=>x.Lecture.Assighnment).OrderBy(x=>x.Lecture.number);
 
         return lectures.Select(x =>  new Selectdto { id = x.Id, name = x.Lecture.Header }).ToList();
 

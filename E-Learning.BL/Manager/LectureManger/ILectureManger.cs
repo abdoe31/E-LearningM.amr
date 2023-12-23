@@ -17,7 +17,7 @@ public interface ILectureManger
 
     int DeleteLecture(Deletedto deletedto);
     int UpdateLecture(UpdateLectureDto updateLectureDto);
-
+    int UpdateLecture2(UpdateLectureDto updateLectureDto);
     List<LectureDetailsDto> GetLectureList(int Classid);
 
     UserLecturedto GetStudentLectureAttendence(string Studentid);
@@ -32,5 +32,10 @@ public interface ILectureManger
 
     StartendLecture startWatching(int userLectureid);
     List<Selectdto> getLecturetowatch(string userid , int classid);
+
+
+    public int AcessLectureByCodev2(LectureCode lecturecode, string userid, int lectureidd);
+    public List<GetCodesDTO> GetCodesv2()
+;
 
 }

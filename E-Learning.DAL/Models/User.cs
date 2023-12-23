@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using E_Learning.DAL.Models;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -45,5 +46,8 @@ public partial class User : IdentityUser
 
     public virtual ICollection<UserClassRequists>  UserClassRequists { get; set; } = new List<UserClassRequists>();
     public virtual ICollection<Class> Classes { get; set; } = new List<Class>();
+
+    public virtual ICollection<UserQuizAcess> UserQuzAcesses { get; set; } = new List<UserQuizAcess>();
+
 
 }

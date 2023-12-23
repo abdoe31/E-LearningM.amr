@@ -188,7 +188,7 @@ public class QuizManger : IQuizManger
     public GetQustionWithAnswersDto GetQustionWithAnswers2(int userquizix)
     {
 
-        var quiz = _eLearningContext.UserQuizzes.Where(x => x.Id == userquizix).Include(x => x.Quiz).ThenInclude(x => x.Questions).ThenInclude(x => x.Answers).Include(x => x.Quiz.Questions).Include(x=>x.UserAnswers).FirstOrDefault();
+        var quiz = _eLearningContext.UserQuizzes.Where(x => x.Id == userquizix).Include(x => x.UserAnswers).Include(x => x.Quiz).ThenInclude(x => x.Questions).ThenInclude(x => x.Answers).Include(x => x.Quiz.Questions).FirstOrDefault();
 
         if (quiz == null)
         {
@@ -227,13 +227,12 @@ public class QuizManger : IQuizManger
     public int DeleteUserQuiz(int userquizid)
     {
         var quiz =  _eLearningContext.UserQuizzes.Where(x => x.Id == userquizid).Include(x=>x.UserAnswers).FirstOrDefault();
-        var ans = quiz.UserAnswers.ToList();
+        var ans = _eLearningContext.UserAnswers.Where(x=>x.UserQuizId==userquizid).ExecuteDelete();
         if (quiz == null)
         {
 
             return -1;
         }
-        _eLearningContext.UserAnswers.RemoveRange(ans);
 
         _eLearningContext.UserQuizzes.Remove(quiz);
 

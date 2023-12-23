@@ -21,6 +21,7 @@ public partial class Class
     public virtual ICollection<Lecture> Lectures { get; set; } = new List<Lecture>();
 
     public virtual Year? Year { get; set; }
+    public virtual ICollection<LectureCode > LectureCodes { get; set; } = new List<LectureCode>();
 
     public virtual ICollection<User> Users { get; set; } = new List<User>();
     public virtual ICollection<UserClassRequists> UserClassRequists { get; set; } = new List<UserClassRequists>();

@@ -12,6 +12,7 @@ namespace E_Learning.API.Controllers.blob
         public BlobService(BlobServiceClient blobServiceClient)
         {
             _blobServiceClient = blobServiceClient;
+            
         }
 
         public async Task<Uri> UploadFileBlobAsync(string blobContainerName, Stream content, string contentType, string fileName)
@@ -28,5 +29,13 @@ namespace E_Learning.API.Controllers.blob
             containerClient.CreateIfNotExists(PublicAccessType.Blob);
             return containerClient;
         }
+
+
+        public async Task<bool> DeleteFile(string blobContainerName, string fileName)
+        {
+            var containerClient = GetContainerClient(blobContainerName);
+         return       containerClient.DeleteBlobIfExists(fileName);
+        }
+
     }
 }

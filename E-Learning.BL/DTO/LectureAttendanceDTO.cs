@@ -20,6 +20,7 @@ public class UserLectureAttendance
 {
     public int? id { get; set; }
     public string? UserName { get; set; }
+    public string? accesstype { get; set; } 
     public DateTime? start { get; set; }
     public DateTime? end { get; set; }
 }

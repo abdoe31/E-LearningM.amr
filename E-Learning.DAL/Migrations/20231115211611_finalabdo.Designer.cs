@@ -4,6 +4,7 @@ using E_Learning.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace E_Learning.DAL.Migrations
 {
     [DbContext(typeof(ELearningContext))]
-    partial class ELearningContextModelSnapshot : ModelSnapshot
+    [Migration("20231115211611_finalabdo")]
+    partial class finalabdo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -164,15 +167,9 @@ namespace E_Learning.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("Classid")
-                        .HasColumnType("int");
-
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("CodeTybe")
-                        .HasColumnType("int");
 
                     b.Property<DateTime?>("GeneratedAt")
                         .HasColumnType("datetime2");
@@ -180,7 +177,7 @@ namespace E_Learning.DAL.Migrations
                     b.Property<string>("GeneratedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("Lectureid")
+                    b.Property<int>("Lectureid")
                         .HasColumnType("int");
 
                     b.Property<bool?>("QuizRequired")
@@ -200,8 +197,6 @@ namespace E_Learning.DAL.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Classid");
 
                     b.HasIndex(new[] { "Lectureid" }, "IX_LectureCode_Lectureid");
 
@@ -945,14 +940,11 @@ namespace E_Learning.DAL.Migrations
 
             modelBuilder.Entity("E_Learning.DAL.LectureCode", b =>
                 {
-                    b.HasOne("E_Learning.DAL.Class", "Class")
-                        .WithMany("LectureCodes")
-                        .HasForeignKey("Classid");
-
                     b.HasOne("E_Learning.DAL.Lecture", "Lecture")
                         .WithMany("LectureCodes")
                         .HasForeignKey("Lectureid")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
                         .HasConstraintName("FK_LectureCode_Lecture");
 
                     b.HasOne("E_Learning.DAL.User", "Student")
@@ -960,8 +952,6 @@ namespace E_Learning.DAL.Migrations
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .HasConstraintName("FK_LectureCode_User");
-
-                    b.Navigation("Class");
 
                     b.Navigation("Lecture");
 
@@ -1241,8 +1231,6 @@ namespace E_Learning.DAL.Migrations
 
             modelBuilder.Entity("E_Learning.DAL.Class", b =>
                 {
-                    b.Navigation("LectureCodes");
-
                     b.Navigation("Lectures");
 
                     b.Navigation("Notifications");

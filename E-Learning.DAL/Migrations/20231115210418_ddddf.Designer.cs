@@ -4,6 +4,7 @@ using E_Learning.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace E_Learning.DAL.Migrations
 {
     [DbContext(typeof(ELearningContext))]
-    partial class ELearningContextModelSnapshot : ModelSnapshot
+    [Migration("20231115210418_ddddf")]
+    partial class ddddf
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -164,15 +167,9 @@ namespace E_Learning.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("Classid")
-                        .HasColumnType("int");
-
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("CodeTybe")
-                        .HasColumnType("int");
 
                     b.Property<DateTime?>("GeneratedAt")
                         .HasColumnType("datetime2");
@@ -180,7 +177,7 @@ namespace E_Learning.DAL.Migrations
                     b.Property<string>("GeneratedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("Lectureid")
+                    b.Property<int>("Lectureid")
                         .HasColumnType("int");
 
                     b.Property<bool?>("QuizRequired")
@@ -201,37 +198,11 @@ namespace E_Learning.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Classid");
-
                     b.HasIndex(new[] { "Lectureid" }, "IX_LectureCode_Lectureid");
 
                     b.HasIndex(new[] { "StudentId" }, "IX_LectureCode_StudentId");
 
                     b.ToTable("LectureCode", (string)null);
-                });
-
-            modelBuilder.Entity("E_Learning.DAL.Models.UserQuizAcess", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("QuizeId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("QuizeId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserQuizAcess");
                 });
 
             modelBuilder.Entity("E_Learning.DAL.Notification", b =>
@@ -945,14 +916,11 @@ namespace E_Learning.DAL.Migrations
 
             modelBuilder.Entity("E_Learning.DAL.LectureCode", b =>
                 {
-                    b.HasOne("E_Learning.DAL.Class", "Class")
-                        .WithMany("LectureCodes")
-                        .HasForeignKey("Classid");
-
                     b.HasOne("E_Learning.DAL.Lecture", "Lecture")
                         .WithMany("LectureCodes")
                         .HasForeignKey("Lectureid")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
                         .HasConstraintName("FK_LectureCode_Lecture");
 
                     b.HasOne("E_Learning.DAL.User", "Student")
@@ -961,30 +929,9 @@ namespace E_Learning.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .HasConstraintName("FK_LectureCode_User");
 
-                    b.Navigation("Class");
-
                     b.Navigation("Lecture");
 
                     b.Navigation("Student");
-                });
-
-            modelBuilder.Entity("E_Learning.DAL.Models.UserQuizAcess", b =>
-                {
-                    b.HasOne("E_Learning.DAL.Quize", "Quize")
-                        .WithMany("UserQuizAcesses")
-                        .HasForeignKey("QuizeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("E_Learning.DAL.User", "User")
-                        .WithMany("UserQuzAcesses")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Quize");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("E_Learning.DAL.Notification", b =>
@@ -1241,8 +1188,6 @@ namespace E_Learning.DAL.Migrations
 
             modelBuilder.Entity("E_Learning.DAL.Class", b =>
                 {
-                    b.Navigation("LectureCodes");
-
                     b.Navigation("Lectures");
 
                     b.Navigation("Notifications");
@@ -1274,8 +1219,6 @@ namespace E_Learning.DAL.Migrations
 
                     b.Navigation("Questions");
 
-                    b.Navigation("UserQuizAcesses");
-
                     b.Navigation("UserQuizzes");
                 });
 
@@ -1304,8 +1247,6 @@ namespace E_Learning.DAL.Migrations
                     b.Navigation("UserLectures");
 
                     b.Navigation("UserQuizzes");
-
-                    b.Navigation("UserQuzAcesses");
                 });
 #pragma warning restore 612, 618
         }
