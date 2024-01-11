@@ -14,7 +14,8 @@ public class GetCodesDTO
     public string? Lecturename { get; set; }
 
     public string? UserName  { get; set; }
-
+    public string ?Createdby { get; set; }   
+    public DateTime? Createddate { get; set; } 
     public DateTime? Usedate { get; set; }
     public bool Used { get; set; }  
 

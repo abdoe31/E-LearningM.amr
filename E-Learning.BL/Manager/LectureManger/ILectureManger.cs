@@ -13,7 +13,7 @@ public interface ILectureManger
 {
 
     int addLecture(AddLectureDTO addlecturedto);
-    int AddAcessToUser(List<AddLectureAcessDto> addLectureAcessDtos);
+    int AddAcessToUser(List<AddLectureAcessDto> addLectureAcessDtos , string name);
 
     int DeleteLecture(Deletedto deletedto);
     int UpdateLecture(UpdateLectureDto updateLectureDto);
@@ -22,7 +22,7 @@ public interface ILectureManger
 
     UserLecturedto GetStudentLectureAttendence(string Studentid);
     LectureAttendanceDTO GetLectureAttendance(int lectureId);
-    List<Codegenerateddto> GenerateCodes(PostCodegenerateddto postCodegenerateddto);
+    List<Codegenerateddto> GenerateCodes(PostCodegenerateddto postCodegenerateddto, string name);
     List<GetCodesDTO> GetCodes(int Lectureid);
 
     UsersCLass  GetLectureWithUsers(int   Userid);

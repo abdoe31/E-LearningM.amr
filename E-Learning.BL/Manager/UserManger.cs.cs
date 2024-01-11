@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using E_Learning.BL.DTO;
 using E_Learning.DAL;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualBasic;
 
@@ -15,13 +16,14 @@ namespace E_Learning.BL
     public class UserManger : IUserManger
     {
         private readonly IUnitOfWork _UnitOfWork;
+        private readonly ELearningContext _LearningContext;
         private readonly UserManager<User> _userManager;
 
-        public UserManger(IUnitOfWork unitOfWork , UserManager<User> userManager)
+        public UserManger(IUnitOfWork unitOfWork , UserManager<User> userManager ,   ELearningContext _LearningContext)
         {
             _UnitOfWork = unitOfWork;
             _userManager = userManager;
-
+            this._LearningContext = _LearningContext;   
         }
 
         public Returnofreg AddStudent(AddStudentDto addStudentDto)
@@ -140,7 +142,7 @@ namespace E_Learning.BL
 
         }
 
-
+      
 
         public GetUserDto GetUser(String id)
         {
@@ -187,6 +189,8 @@ namespace E_Learning.BL
         public int DeleteUser(string userid)
         {
             int E=0 ;
+
+
             _UnitOfWork._userAnswerrepository.Deletebystudent(userid);
        E +=  _UnitOfWork._Userrepository.DeleteStudent(userid);
             return  E+= _UnitOfWork.SaveChanges();
@@ -257,7 +261,7 @@ namespace E_Learning.BL
                 ParentPhoneNumber = x.ParentPhoneNumber,
                 Pasword = x.Pasword,
                 PhoneNumber = x.StudentPhoneNumber,
-                Username = x.Username,
+                Username = x.Username, Haveparent = x.Parents.Count()> 0,
                 userYear = new UserYearDTO { Id = x.Yearid, Name = x.Year?.Name, Classes = x.Classes.Where(x => x.Id == classid).Select(z => new UserClassDTO { Id = z.Id, Name = z.Name }).ToList() }
             }).ToList();
 
@@ -331,6 +335,20 @@ namespace E_Learning.BL
            
 
         }
+
+
+
+
+        
+        
+        public User  CheckforParent (string id ) {
+
+
+        return    _LearningContext.Users.Include(x=>x.Parents).Where(x => x.Id == id && (x.Parents.ToList().Count()==0) ).FirstOrDefault() ;
+        
+        }
+
+
     }
 }
     

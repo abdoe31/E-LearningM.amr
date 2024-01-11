@@ -22,7 +22,7 @@ namespace E_Learning.BL
         GetUserDto GetUser(string id);
         public ICollection<getAdminsdto> GetAllAdmins();
         public int ChangePassword(ChangePassoworddto user);
-
+        public User CheckforParent(string id);
         UserHomeDto userHome(string id);
 
     }

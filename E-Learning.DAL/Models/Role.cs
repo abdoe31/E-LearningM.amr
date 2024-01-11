@@ -8,7 +8,7 @@ namespace E_Learning.DAL
 {
     public enum Role
     {
-        Sadmin, Student, Admin 
+        Sadmin, Student, Admin  , Parent
     }
 
     public enum AcessType

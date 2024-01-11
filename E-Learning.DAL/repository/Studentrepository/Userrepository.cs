@@ -77,7 +77,7 @@ namespace E_Learning.DAL
 
         public Class GetStudentsByClass(int Classid)
         {
-            return _eLearningContext.Classes.Where(x => x.Id == Classid).Include(x => x.Users).FirstOrDefault();
+            return _eLearningContext.Classes.Where(x => x.Id == Classid).Include(x => x.Users).ThenInclude(x=>x.Parents).FirstOrDefault();
         
         }
         public Class GetStudentsByClassToLecture(int Classid)

@@ -19,6 +19,7 @@ public partial class ELearningContext : IdentityDbContext
     {
     }
 
+
     public virtual DbSet<Answer> Answers { get; set; }
     public virtual DbSet<UserQuizAcess> UserQuizAcess { get; set; }
 
@@ -58,6 +59,8 @@ public partial class ELearningContext : IdentityDbContext
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.Entity<IdentityUser>().UseTptMappingStrategy();
+
+
 
         modelBuilder.Entity<Answer>(entity =>
         {
@@ -213,7 +216,28 @@ public partial class ELearningContext : IdentityDbContext
             entity.Property(e => e.StudentPhoneNumber).HasMaxLength(50);
             entity.Property(e => e.SecondName).HasMaxLength(50);
 
-            entity.HasOne(d =>d.Year).WithMany(d=>d.Users).HasForeignKey(d => d.Yearid).OnDelete(DeleteBehavior.SetNull);
+            entity.HasMany(x => x.Children).WithMany(x => x.Parents).UsingEntity<Dictionary<string, object>>(
+                    "ParentWithChild",
+                    r => r.HasOne<User>().WithMany()
+                        .HasForeignKey("ChildId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasConstraintName("FK_ParentWithChildren_Child"),
+                    l => l.HasOne<User>().WithMany()
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasConstraintName("FK_ParentWithChildren_Parent"),
+                    j =>
+                    {
+                        j.HasKey("ParentId", "ChildId");
+                        j.ToTable("ParentsWithChildren");
+                        j.HasIndex(new[] { "ChildId" }, "IX_ParentsWithChildren_ChildId");
+                        j.HasIndex(new[] { "ParentId" }, "IX_ParentsWithChildren_ParentId");
+
+
+                    });
+       
+
+        entity.HasOne(d =>d.Year).WithMany(d=>d.Users).HasForeignKey(d => d.Yearid).OnDelete(DeleteBehavior.SetNull);
             entity.HasMany(d => d.Classes).WithMany(p => p.Users)
                 .UsingEntity<Dictionary<string, object>>(
                     "UserClass",

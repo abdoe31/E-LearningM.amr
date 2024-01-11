@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 using System.Text.RegularExpressions;
 using System.Transactions;
 
@@ -71,7 +72,9 @@ namespace E_Learning.API.Controllers
             {
                 return BadRequest();
             }
-            var n =  _LectureManger.AddAcessToUser(addLectureAcessDtos);
+            var Adminname = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+
+            var n =  _LectureManger.AddAcessToUser(addLectureAcessDtos, Adminname);
 
             if (n < 0)
             {
@@ -175,7 +178,10 @@ namespace E_Learning.API.Controllers
                 return BadRequest();
             }
 
-            return Ok(_LectureManger.GenerateCodes(postCodegenerateddto));
+            var Adminname = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+
+
+            return Ok(_LectureManger.GenerateCodes(postCodegenerateddto , Adminname));
 
 
 

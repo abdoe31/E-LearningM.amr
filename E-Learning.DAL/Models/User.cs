@@ -21,6 +21,7 @@ public partial class User : IdentityUser
 
     public string? ParentPhoneNumber { get; set; } = string.Empty;
 
+
     public bool Active { get; set; }
 
     public int? Yearid { get; set; } 
@@ -46,6 +47,8 @@ public partial class User : IdentityUser
 
     public virtual ICollection<UserClassRequists>  UserClassRequists { get; set; } = new List<UserClassRequists>();
     public virtual ICollection<Class> Classes { get; set; } = new List<Class>();
+    public virtual ICollection<User> Parents { get; set; } = new List<User>();
+    public virtual ICollection<User> Children { get; set; } = new List<User>();
 
     public virtual ICollection<UserQuizAcess> UserQuzAcesses { get; set; } = new List<UserQuizAcess>();
 

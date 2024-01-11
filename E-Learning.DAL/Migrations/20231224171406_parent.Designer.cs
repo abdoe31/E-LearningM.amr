@@ -4,6 +4,7 @@ using E_Learning.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace E_Learning.DAL.Migrations
 {
     [DbContext(typeof(ELearningContext))]
-    partial class ELearningContextModelSnapshot : ModelSnapshot
+    [Migration("20231224171406_parent")]
+    partial class parent
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -463,12 +466,6 @@ namespace E_Learning.DAL.Migrations
                     b.Property<bool>("AssighmentSolved")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Createdby")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("Createddate")
-                        .HasColumnType("datetime2");
-
                     b.Property<int?>("Duration")
                         .HasColumnType("int");
 
@@ -830,23 +827,6 @@ namespace E_Learning.DAL.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("ParentWithChild", b =>
-                {
-                    b.Property<string>("ParentId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ChildId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("ParentId", "ChildId");
-
-                    b.HasIndex(new[] { "ChildId" }, "IX_ParentsWithChildren_ChildId");
-
-                    b.HasIndex(new[] { "ParentId" }, "IX_ParentsWithChildren_ParentId");
-
-                    b.ToTable("ParentsWithChildren", (string)null);
-                });
-
             modelBuilder.Entity("UserClass", b =>
                 {
                     b.Property<string>("UserId")
@@ -880,6 +860,9 @@ namespace E_Learning.DAL.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<string>("ParentId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("ParentPhoneNumber")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -911,6 +894,8 @@ namespace E_Learning.DAL.Migrations
 
                     b.Property<int?>("Yearid")
                         .HasColumnType("int");
+
+                    b.HasIndex("ParentId");
 
                     b.HasIndex(new[] { "Yearid" }, "IX_User_Yearid");
 
@@ -1217,23 +1202,6 @@ namespace E_Learning.DAL.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ParentWithChild", b =>
-                {
-                    b.HasOne("E_Learning.DAL.User", null)
-                        .WithMany()
-                        .HasForeignKey("ChildId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_ParentWithChildren_Child");
-
-                    b.HasOne("E_Learning.DAL.User", null)
-                        .WithMany()
-                        .HasForeignKey("ParentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_ParentWithChildren_Parent");
-                });
-
             modelBuilder.Entity("UserClass", b =>
                 {
                     b.HasOne("E_Learning.DAL.Class", null)
@@ -1259,10 +1227,17 @@ namespace E_Learning.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("E_Learning.DAL.User", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("E_Learning.DAL.Year", "Year")
                         .WithMany("Users")
                         .HasForeignKey("Yearid")
                         .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Parent");
 
                     b.Navigation("Year");
                 });
@@ -1333,6 +1308,8 @@ namespace E_Learning.DAL.Migrations
 
             modelBuilder.Entity("E_Learning.DAL.User", b =>
                 {
+                    b.Navigation("Children");
+
                     b.Navigation("LectureCodes");
 
                     b.Navigation("UserAnswers");

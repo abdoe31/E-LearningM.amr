@@ -23,4 +23,6 @@ public class UserLectureAttendance
     public string? accesstype { get; set; } 
     public DateTime? start { get; set; }
     public DateTime? end { get; set; }
+    public string? accessby { get; set; }
+    public DateTime? accessdate { get; set;}
 }

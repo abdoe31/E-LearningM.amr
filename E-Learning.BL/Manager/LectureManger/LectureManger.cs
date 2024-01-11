@@ -25,7 +25,7 @@ public class LectureManger : ILectureManger
 
     }
 
-    public int AddAcessToUser(List<AddLectureAcessDto> addLectureAcessDtos)
+    public int AddAcessToUser(List<AddLectureAcessDto> addLectureAcessDtos , string name)
     {
         if (addLectureAcessDtos.IsNullOrEmpty())
         {
@@ -59,7 +59,9 @@ public class LectureManger : ILectureManger
                         AcessType = item.AcessType,
                         StudentId = item.UserId,
                         QuizRequired = false,
-                        Duration = item.Duration
+                        Duration = item.Duration ,
+                        Createdby = name,
+                        Createddate = DateTime.Now
                     };
 
                     UserLectures.Add(userLecture);
@@ -73,7 +75,7 @@ public class LectureManger : ILectureManger
                     AcessType = item.AcessType,
                     StudentId = item.UserId,
                     QuizRequired = item.quizrequird,
-                    Duration = item.Duration
+                    Duration = item.Duration , Createdby=name , Createddate = DateTime.Now
                 };
 
                 UserLectures.Add(userLecture);
@@ -122,7 +124,7 @@ public class LectureManger : ILectureManger
         return _UnitOfWork.SaveChanges();
     }
 
-    public List<Codegenerateddto> GenerateCodes(PostCodegenerateddto postCodegenerateddto)
+    public List<Codegenerateddto> GenerateCodes(PostCodegenerateddto postCodegenerateddto , string name )
     {
         int l = 6;
 
@@ -176,8 +178,8 @@ public class LectureManger : ILectureManger
 
 
             one.Code = code;
-            one.GeneratedAt = DateTime.Now; 
-            
+            one.GeneratedAt = DateTime.Now;
+            one.GeneratedBy = name;
             one.duration = postCodegenerateddto.duration;
             
             one.QuizRequired = postCodegenerateddto.QuizRequird;
@@ -246,7 +248,10 @@ public class LectureManger : ILectureManger
             Used = x.Used,
             Usedate = x.Usedate,
               Lecturename = x.Lecture != null ? $"{x.Lecture.Header}" : null
-            ,UserName = x.Student != null ? $"{x.Student.FirstName}  {x.Student.SecondName}  {x.Student.LastName}" : null
+            ,UserName = x.Student != null ? $"{x.Student.FirstName}  {x.Student.SecondName}  {x.Student.LastName}" : null 
+
+            , Createdby = x.GeneratedBy !=null ? x.GeneratedBy.ToString() : null
+            , Createddate = x.GeneratedAt !=null ? x.GeneratedAt : null  
         }).OrderByDescending(x=>  x.Used) .ToList();
 
 
@@ -269,15 +274,18 @@ public class LectureManger : ILectureManger
 
         return new LectureAttendanceDTO
         {
-             
-            LectureName =lec.Header,
+
+            LectureName = lec.Header,
             userLectureAttendances = lec.UserLectures.Select(x =>
         new UserLectureAttendance
         {
             UserName = $"{x.Student.FirstName}  {x.Student.SecondName}  {x.Student.LastName}",
-             start =x.Start,
+            start = x.Start,
             end = x.End
-            ,  id= x.Id  , accesstype = x.AcessType.ToString()
+            , id = x.Id, 
+            accesstype = x.AcessType.ToString(), accessby = x.Createdby != null ? x.Createdby.ToString() : null
+            ,
+            accessdate = x.Createddate !=null ?  x.Createddate : null
         }
 
         ).ToList()

@@ -22,7 +22,8 @@ public partial class UserLecture
     public bool QuizRequired { get; set; }
     public bool QuizSolved { get; set; }
     public bool AssighmentSolved { get; set; }
-
+     public string? Createdby { get; set; }  
+    public DateTime? Createddate { get; set; } 
 
     public int? Duration { get; set; }
 

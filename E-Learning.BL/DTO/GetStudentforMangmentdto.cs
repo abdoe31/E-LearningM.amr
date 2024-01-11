@@ -24,6 +24,7 @@ public class GetStudentforMangmentdto
 
     public string Pasword { get; set; }
     public UserYearDTO userYear { get; set; }
+    public bool Haveparent { get; set; }
 
 
 }
