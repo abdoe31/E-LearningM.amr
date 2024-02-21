@@ -263,7 +263,7 @@ public class LectureManger : ILectureManger
     public LectureAttendanceDTO GetLectureAttendance(int lectureId)
     {
 
-        var lec = _eLearningContext.Lectures.Where(x => x.Id == lectureId).Include(x => x.UserLectures).ThenInclude(x => x.Student).FirstOrDefault();
+        var lec = _eLearningContext.Lectures.Where(x => x.Id == lectureId)  .Include(x => x.UserLectures). ThenInclude(x => x.Student).Include(x=>x.UserLectures).ThenInclude(x=>x.Place).FirstOrDefault();
       if (lec == null)
         {
             return null;
@@ -286,6 +286,7 @@ public class LectureManger : ILectureManger
             accesstype = x.AcessType.ToString(), accessby = x.Createdby != null ? x.Createdby.ToString() : null
             ,
             accessdate = x.Createddate !=null ?  x.Createddate : null
+            , LectureType = x.LectureType.ToString(), Place = x.Place?.name , assigmentattent = x.AssighmentSolved , Assigmentgrade = x.AssighmentGrade
         }
 
         ).ToList()
@@ -372,7 +373,7 @@ public class LectureManger : ILectureManger
             lectureuserAcessds = user.UserLectures.Select(x => new lectureuserAcessd { Lectureid = x.Id, AcessType = x.AcessType.ToString(), Start = x.Start
 
             , End = x.End
-             , LectureName = x.Lecture?.Header }).ToList()
+             , LectureName = x.Lecture?.Header , LectureType= x.LectureType?.ToString() , Place = x.Place?.name }).ToList()
         };
 
 
@@ -424,7 +425,7 @@ public class LectureManger : ILectureManger
         lecturecode.Used = true;
         lecturecode.Usedate = DateTime.Now;
 
-        _UnitOfWork._Userrepository.GetUser(userid).UserLectures.Add( new UserLecture {  Lectureid=lecturecode.Lectureid , AcessType= AcessType.Code,
+        _UnitOfWork._Userrepository.GetUser(userid).UserLectures.Add( new UserLecture {  Lectureid=lecturecode.Lectureid , LectureType = LectureType.Online ,  AcessType= AcessType.Code,
             Duration= lecturecode.duration, StudentId=  userid , QuizRequired= (bool)lecturecode.QuizRequired 
         });
         return _UnitOfWork.SaveChanges() ; 
@@ -448,7 +449,8 @@ public class LectureManger : ILectureManger
             AcessType = AcessType.Code,
             Duration = lecturecode.duration,
             StudentId = userid,
-            QuizRequired = (bool)lecturecode.QuizRequired
+            QuizRequired = (bool)lecturecode.QuizRequired ,
+            LectureType = LectureType.Online
         });
         return _UnitOfWork.SaveChanges();
     }
@@ -482,7 +484,7 @@ public class LectureManger : ILectureManger
     {
 
 
-      var lectures =    _eLearningContext.UserLectures.Where(x=>(x.Start==null || x.End> DateTime.Now)  && x.StudentId==userid && x.Lecture.Classid==classid).Include(x=>x.Lecture).Include(x=> x.Lecture.VideoParts).Include(x=>x.Lecture.Quiz).Include(x=>x.Lecture.Assighnment).OrderBy(x=>x.Lecture.number);
+      var lectures =    _eLearningContext.UserLectures.Where(x=>(x.Start==null || x.End> DateTime.Now)  && x.StudentId==userid && x.Lecture.Classid==classid && x.LectureType == LectureType.Online ).Include(x=>x.Lecture).Include(x=> x.Lecture.VideoParts).Include(x=>x.Lecture.Quiz).Include(x=>x.Lecture.Assighnment).OrderBy(x=>x.Lecture.number);
 
         return lectures.Select(x =>  new Selectdto { id = x.Id, name = x.Lecture.Header }).ToList();
 

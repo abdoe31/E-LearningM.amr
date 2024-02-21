@@ -156,12 +156,12 @@ namespace E_Learning.BL
                     FirstName = User.FirstName,
                     Id = User.Id,
                     LastName = User.LastName,
-
+                    classid = User.Classes.FirstOrDefault().Id,
                     SecondName = User.SecondName,
                     ParentPhoneNumber = User.ParentPhoneNumber,
                     password = User.Pasword,
                     Username = User.Username,
-                    PhoneNumber = User.StudentPhoneNumber
+                    PhoneNumber = User.StudentPhoneNumber, PlaceTimeId=User.PlaceWithTimeId
                 };
             }
             if(User.Role== Role.Sadmin || User.Role== Role.Admin)
@@ -260,7 +260,7 @@ namespace E_Learning.BL
                 Name = $"{x.FirstName}  {x.SecondName} {x.LastName}",
                 ParentPhoneNumber = x.ParentPhoneNumber,
                 Pasword = x.Pasword,
-                PhoneNumber = x.StudentPhoneNumber,
+                PhoneNumber = x.StudentPhoneNumber, PlaceId =x.PlaceWithTimeId,
                 Username = x.Username, Haveparent = x.Parents.Count()> 0,
                 userYear = new UserYearDTO { Id = x.Yearid, Name = x.Year?.Name, Classes = x.Classes.Where(x => x.Id == classid).Select(z => new UserClassDTO { Id = z.Id, Name = z.Name }).ToList() }
             }).ToList();
@@ -302,6 +302,7 @@ namespace E_Learning.BL
 
             Update.StudentPhoneNumber = user.PhoneNumber;
             Update.Pasword = user.password;
+            Update.PlaceWithTimeId = user.PlaceTimeId;
 
             _UnitOfWork._Userrepository.Update(Update);
             return _UnitOfWork.SaveChanges();

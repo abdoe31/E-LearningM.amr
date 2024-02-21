@@ -52,6 +52,7 @@ public partial class Quize
 
     public virtual ICollection<UserQuiz> UserQuizzes { get; set; } = new List<UserQuiz>();
 
+    public virtual ICollection<OfflineLecture>  OfflineLectures { get; set; } = new List<OfflineLecture>();
 
     public virtual ICollection<UserQuizAcess>  UserQuizAcesses { get; set; } = new List<UserQuizAcess>();
 

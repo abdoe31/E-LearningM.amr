@@ -1,4 +1,5 @@
-﻿using System;
+﻿using E_Learning.DAL.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -32,6 +33,7 @@ public partial class Lecture
     public virtual Quize? Quiz { get; set; }
 
     public virtual ICollection<UserLecture> UserLectures { get; set; } = new List<UserLecture>();
+    public virtual ICollection<OfflineLecture> OfflineLectures { get; set; } = new List<OfflineLecture>();
 
     public virtual ICollection<VideoPart> VideoParts { get; set; } = new List<VideoPart>();
     public virtual ICollection<Videofiles>  Videofiles { get; set; } = new List<Videofiles>();

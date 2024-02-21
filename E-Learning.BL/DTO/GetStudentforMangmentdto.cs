@@ -12,7 +12,7 @@ public class GetStudentforMangmentdto
     public string Id { get; set; }
 
     public string Username { get; set; } = null!;
-
+    public int? PlaceId {  get; set; }  
     public string? Name { get; set; } = string.Empty;
 
 

@@ -16,6 +16,21 @@ namespace E_Learning.DAL
         Manual, Code
 
     }
+
+
+
+    public enum PlaceType
+    {
+
+
+        Math , Mechanics , Math_Mechanics 
+    }
+
+    public enum LectureType
+    {
+        Online, Offline
+
+    }
     public static class Time
     {
         public static  DateTime GetCurrentDateTime()

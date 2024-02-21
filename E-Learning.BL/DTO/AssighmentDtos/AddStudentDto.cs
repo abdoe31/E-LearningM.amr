@@ -15,7 +15,7 @@ namespace E_Learning.BL
 
         public string? FirstName { get; set; }
         public string? SecondName { get; set; }
-
+        public int? PlaceTimeId { get; set; }   
         public string? UpdatedBy { get; set; }
         public DateTime? Updatedat { get; set; }
         public string? LastName { get; set; }

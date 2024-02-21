@@ -10,6 +10,6 @@ public  class Selectdto
 {
    public int id { get; set; }
     public string name { get; set; } = string.Empty;
-    public string FilePath { get; set; } = null!;
+    public string? FilePath { get; set; } = null!;
 
 }

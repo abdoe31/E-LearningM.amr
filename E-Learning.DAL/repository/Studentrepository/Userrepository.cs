@@ -94,7 +94,7 @@ namespace E_Learning.DAL
         {
 
 
-            return _eLearningContext.Users.Where(x => x.Id == id).Include(x => x.Classes).Include(x=>x.Year) .Include(x => x.UserQuizzes).Include(x => x.UserLectures).ThenInclude(x=>x.Lecture).Include(x => x.UserAssighments).Include(x=>x.UserClassRequists).ThenInclude(x=>x.Class).FirstOrDefault();
+            return _eLearningContext.Users.Where(x => x.Id == id).Include(x => x.Classes).Include(x=>x.Year) .Include(x => x.UserQuizzes).ThenInclude(x=>x.Place).Include(x => x.UserLectures).ThenInclude(x => x.Place).Include(x => x.UserLectures).ThenInclude(x=>x. Lecture).Include(x => x.UserAssighments).Include(x=>x.UserClassRequists).ThenInclude(x=>x.Class).FirstOrDefault();
         }
 
         public int DeleteStudent(string user)

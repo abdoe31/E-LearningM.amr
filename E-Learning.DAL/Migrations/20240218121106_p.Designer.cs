@@ -4,6 +4,7 @@ using E_Learning.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace E_Learning.DAL.Migrations
 {
     [DbContext(typeof(ELearningContext))]
-    partial class ELearningContextModelSnapshot : ModelSnapshot
+    [Migration("20240218121106_p")]
+    partial class p
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -572,7 +575,7 @@ namespace E_Learning.DAL.Migrations
                     b.Property<int?>("AssighmentGrade")
                         .HasColumnType("int");
 
-                    b.Property<bool?>("AssighmentSolved")
+                    b.Property<bool>("AssighmentSolved")
                         .HasColumnType("bit");
 
                     b.Property<string>("Createdby")
@@ -1164,7 +1167,7 @@ namespace E_Learning.DAL.Migrations
                         .IsRequired();
 
                     b.HasOne("E_Learning.DAL.Models.Place", "Place")
-                        .WithMany("PlaceWithTimes")
+                        .WithMany()
                         .HasForeignKey("PlaceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1506,8 +1509,6 @@ namespace E_Learning.DAL.Migrations
 
             modelBuilder.Entity("E_Learning.DAL.Models.Place", b =>
                 {
-                    b.Navigation("PlaceWithTimes");
-
                     b.Navigation("userLectures");
 
                     b.Navigation("userQuizzes");

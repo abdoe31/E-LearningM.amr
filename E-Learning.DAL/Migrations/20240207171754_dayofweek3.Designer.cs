@@ -4,6 +4,7 @@ using E_Learning.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace E_Learning.DAL.Migrations
 {
     [DbContext(typeof(ELearningContext))]
-    partial class ELearningContextModelSnapshot : ModelSnapshot
+    [Migration("20240207171754_dayofweek3")]
+    partial class dayofweek3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -218,9 +221,6 @@ namespace E_Learning.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
 
-                    b.Property<bool?>("AssighmentAttend")
-                        .HasColumnType("bit");
-
                     b.Property<int?>("AssighmentGrade")
                         .HasColumnType("int");
 
@@ -235,9 +235,6 @@ namespace E_Learning.DAL.Migrations
 
                     b.Property<int?>("PlaceTimeId")
                         .HasColumnType("int");
-
-                    b.Property<bool?>("QuizAttend")
-                        .HasColumnType("bit");
 
                     b.Property<int?>("QuizGrade")
                         .HasColumnType("int");
@@ -569,10 +566,7 @@ namespace E_Learning.DAL.Migrations
                     b.Property<int?>("AcessType")
                         .HasColumnType("int");
 
-                    b.Property<int?>("AssighmentGrade")
-                        .HasColumnType("int");
-
-                    b.Property<bool?>("AssighmentSolved")
+                    b.Property<bool>("AssighmentSolved")
                         .HasColumnType("bit");
 
                     b.Property<string>("Createdby")
@@ -1020,9 +1014,6 @@ namespace E_Learning.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("PlaceWithTimeId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Role")
                         .HasColumnType("int");
 
@@ -1046,8 +1037,6 @@ namespace E_Learning.DAL.Migrations
 
                     b.Property<int?>("Yearid")
                         .HasColumnType("int");
-
-                    b.HasIndex("PlaceWithTimeId");
 
                     b.HasIndex(new[] { "Yearid" }, "IX_User_Yearid");
 
@@ -1164,7 +1153,7 @@ namespace E_Learning.DAL.Migrations
                         .IsRequired();
 
                     b.HasOne("E_Learning.DAL.Models.Place", "Place")
-                        .WithMany("PlaceWithTimes")
+                        .WithMany()
                         .HasForeignKey("PlaceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1454,16 +1443,10 @@ namespace E_Learning.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("E_Learning.DAL.Models.PlaceWithTime", "PlaceWithTime")
-                        .WithMany("Users")
-                        .HasForeignKey("PlaceWithTimeId");
-
                     b.HasOne("E_Learning.DAL.Year", "Year")
                         .WithMany("Users")
                         .HasForeignKey("Yearid")
                         .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("PlaceWithTime");
 
                     b.Navigation("Year");
                 });
@@ -1506,8 +1489,6 @@ namespace E_Learning.DAL.Migrations
 
             modelBuilder.Entity("E_Learning.DAL.Models.Place", b =>
                 {
-                    b.Navigation("PlaceWithTimes");
-
                     b.Navigation("userLectures");
 
                     b.Navigation("userQuizzes");
@@ -1516,8 +1497,6 @@ namespace E_Learning.DAL.Migrations
             modelBuilder.Entity("E_Learning.DAL.Models.PlaceWithTime", b =>
                 {
                     b.Navigation("OfflineLectures");
-
-                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("E_Learning.DAL.Question", b =>

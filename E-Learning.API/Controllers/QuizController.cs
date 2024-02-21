@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace E_Learning.API.Controllers
 {
@@ -14,14 +15,17 @@ namespace E_Learning.API.Controllers
     public class QuizController : ControllerBase
     {
         private readonly IQuizManger _quizManger;
+        private readonly IUserManger  userManger;
+
         private readonly ELearningContext eLearningContext;
 
 
 
-        public QuizController(IQuizManger quizManger, ELearningContext eLearningContext)
+        public QuizController(IQuizManger quizManger, ELearningContext eLearningContext, IUserManger userManger)
         {
             _quizManger = quizManger;
             this.eLearningContext = eLearningContext;
+            this.userManger = userManger;
         }
 
 
@@ -485,9 +489,9 @@ namespace E_Learning.API.Controllers
         [HttpGet("GetUserQuizesResult/{userid}")]
         public IActionResult GetUserQuizesResult(string userid)
         {
-            var userquiz = eLearningContext.UserQuizzes.Where(x => x.Studentid == userid && x.End < Time.GetCurrentDateTime()).Include(x => x.UserAnswers).ThenInclude(x => x.Question).Include(x => x.Student).Include(x => x.Quiz);
+            var userquiz = eLearningContext.UserQuizzes.Where(x => x.Studentid == userid && x.End < Time.GetCurrentDateTime()).Include(x => x.UserAnswers).ThenInclude(x => x.Question).Include(x => x.Student).Include(x => x.Quiz).Include(x => x.Place);
 
-            return Ok(userquiz.Select(x => new { QuizId = x.Quizid, Username = $"{x.Student.FirstName} {x.Student.SecondName} {x.Student.LastName}  ", quizname = x.Quiz.Header, quizGrade = x.GetUserQuizGrade() }));
+            return Ok(userquiz.Select(x => new { Place = x.Place != null ? x.Place.name : null, QuizType = x.QuizType.ToString(), QuizId = x.Quizid, Username = $"{x.Student.FirstName} {x.Student.SecondName} {x.Student.LastName}  ", quizname = x.Quiz.Header, quizGrade = x.QuizType ==LectureType.Offline? x.Grade:  x.GetUserQuizGrade() }));
         }
 
 
@@ -496,9 +500,9 @@ namespace E_Learning.API.Controllers
         [HttpGet("GetQuizResult/{quizid}")]
         public IActionResult GetQuizResult(int quizid)
         {
-            var userquiz = eLearningContext.UserQuizzes.Where(x => x.Quizid == quizid).Include(x => x.UserAnswers).ThenInclude(x => x.Question).Include(x => x.Student).Include(x => x.Quiz);
+            var userquiz = eLearningContext.UserQuizzes.Where(x => x.Quizid == quizid).Include(x => x.UserAnswers).ThenInclude(x => x.Question).Include(x => x.Student).Include(x => x.Quiz).Include(x=>x.Place);
 
-            return Ok(userquiz.Select(x => new { userid = x.Student.Id, quizid = x.Quiz.Id, userquiz = x.Id, Username = $"{x.Student.FirstName} {x.Student.SecondName} {x.Student.LastName}  ", quizname = x.Quiz.Header, start = x.Start, end = x.End, time = (x.End - x.Start).ToString(), quizGrade = x.GetUserQuizGrade() }).ToList().OrderByDescending(y => y.quizGrade).ToList());
+            return Ok(userquiz.Select(x => new {  Place = x.Place !=null ? x.Place.name : null ,  QuizType = x.QuizType.ToString()  ,   userid = x.Student.Id, quizid = x.Quiz.Id, userquiz = x.Id, Username = $"{x.Student.FirstName} {x.Student.SecondName} {x.Student.LastName}  ", quizname = x.Quiz.Header, start = x.Start, end = x.End, time = (x.End - x.Start).ToString(), quizGrade = x.QuizType == LectureType.Offline ? x.Grade : x.GetUserQuizGrade() }).ToList().OrderByDescending(y => y.quizGrade).ToList());
         }
 
 
@@ -564,6 +568,7 @@ namespace E_Learning.API.Controllers
         [HttpPost("AddAcesstoQuiz")]
         public IActionResult AddAcesstoQuiz(userquizacess userquizacess)
         {
+
             var quiz = eLearningContext.Quizes.Where(x => x.Id == userquizacess.quizid && x.quizType == QuizType.lecture).FirstOrDefault();
 
             if (quiz == null)
@@ -646,11 +651,144 @@ namespace E_Learning.API.Controllers
             }));
         }
 
+        //oflite
 
+        [HttpGet("GetStudentsWithUserQuiz/{quizid}")]
+
+        public async Task<IActionResult> GetStudentsWithUserQuiz(int quizid)
+        {
+            var quiz = eLearningContext.Quizes.Where(x => x.Id == quizid && x.quizType==QuizType.lecture).FirstOrDefault();
+          
+            if (quiz == null)
+            {
+
+                return BadRequest();
+            }
+
+            var quizdata = eLearningContext.UserQuizzes.Where(x => x.Quizid == quizid && x.Quiz.quizType == QuizType.lecture).Include(x=>x.UserAnswers).ThenInclude(x => x.Question).Include(x => x.Quiz) .ToList();
+           
+            
+            var Students = userManger.GetALLStudentsByClass((int)quiz.Classid);
+
+
+
+            var outt = new List<QuizUserAttendance>();
+
+
+            foreach (var item in Students)
+            {
+                var s = new QuizUserAttendance { UserName = item.Name  ,Userid = item.Id  };
+                var s2 = quizdata.Where(x => x.Studentid == item.Id).FirstOrDefault();
+                if (s2==null)
+                {
+
+                    s.type =  "Not Solved Yet";
+
+                }
+
+                else
+                {
+                    s.grade = s2.QuizType != LectureType.Offline ? _quizManger.GetUserQuizGrade(s2) : s2.Grade;
+
+                    s.placeid= s2.QuizType != LectureType.Offline ? null : s2.PlaceId;
+                    s.StartnTime = s2.Start;
+                    s.EndTiem = s2.End;
+                    s. edit = s2.QuizType == LectureType.Offline;
+                    s.type = s2.QuizType != null? s2.QuizType.ToString() : "Not Solved Yet" ;
+                    s.id = s2.Id;
+
+                }
+                outt.Add(s);
+
+
+
+
+            }
+            return Ok(  new { quizname = quiz.Header, StudentWithgrades = outt.OrderByDescending(x=>x.StartnTime).ToList() });
+        
+        
+        }
+
+
+        [HttpPost("AddUpdateDeleteQuiz")]
+
+        public async Task<IActionResult> AddUpdateDeleteQuiz(AddUpdateDeleteQuizUserAttendance addUpdateDeleteQuizUserAttendance)
+        {
+
+            DAL.UserQuiz userquiz;
+            if (addUpdateDeleteQuizUserAttendance.id != null)
+            {
+                 userquiz = eLearningContext.UserQuizzes.Where(x => x.Id == addUpdateDeleteQuizUserAttendance.id && x.QuizType == LectureType.Offline).FirstOrDefault();
+                if (userquiz == null)
+                {
+                    return BadRequest();
+                }
+                if (addUpdateDeleteQuizUserAttendance.Attend == false)
+                {
+
+                    eLearningContext.UserQuizzes.Remove(userquiz);
+
+                }
+                else
+                {
+                    userquiz.Start = addUpdateDeleteQuizUserAttendance.StartTime;
+                    userquiz.End = addUpdateDeleteQuizUserAttendance.EndTiem;
+                    userquiz.PlaceId = addUpdateDeleteQuizUserAttendance.placeid;
+                    userquiz.Grade =(int) addUpdateDeleteQuizUserAttendance.Grade;
+                 
+                }
+
+            }
+            else
+            {
+                 userquiz = new DAL.UserQuiz {   Start=addUpdateDeleteQuizUserAttendance.StartTime , End =addUpdateDeleteQuizUserAttendance.EndTiem, Quizid = (int)addUpdateDeleteQuizUserAttendance.Quizeid, Studentid = addUpdateDeleteQuizUserAttendance.Userid, QuizType = LectureType.Offline, PlaceId = addUpdateDeleteQuizUserAttendance.placeid  , Grade =(int)addUpdateDeleteQuizUserAttendance.Grade};
+                
+                eLearningContext.UserQuizzes.Add(userquiz);
+
+
+            }
+
+            
+            return Ok(eLearningContext.SaveChanges());
+        }
+    }
+
+
+
+    public class AddUpdateDeleteQuizUserAttendance
+    {
+
+        public int? id { get; set; }
+
+        public int? Quizeid { get; set; }
+        public string? Userid { get; set; }
+        public DateTime?StartTime { get; set; }
+        public DateTime?  EndTiem { get; set; }
+        public bool Attend { get; set; }
+        public double? Grade { get; set; }   
+        public int? placeid { get; set; }
 
 
     }
+    public class QuizUserAttendance
+    {
 
+        public int? id { get; set; } = null;
+        public string? Userid { get; set; }
+
+        public string UserName { get; set; }
+        public double ?  grade { get; set;  }
+        public int? placeid { get; set;  }
+        public DateTime? StartnTime { get; set; }
+        public DateTime? EndTiem { get; set; }
+
+        public bool edit { get; set; } = true;
+
+
+        public string? type { get; set; }
+
+
+    }
     public class getquiztosolvedto
     {
 

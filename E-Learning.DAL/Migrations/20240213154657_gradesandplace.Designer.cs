@@ -4,6 +4,7 @@ using E_Learning.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace E_Learning.DAL.Migrations
 {
     [DbContext(typeof(ELearningContext))]
-    partial class ELearningContextModelSnapshot : ModelSnapshot
+    [Migration("20240213154657_gradesandplace")]
+    partial class gradesandplace
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -572,7 +575,7 @@ namespace E_Learning.DAL.Migrations
                     b.Property<int?>("AssighmentGrade")
                         .HasColumnType("int");
 
-                    b.Property<bool?>("AssighmentSolved")
+                    b.Property<bool>("AssighmentSolved")
                         .HasColumnType("bit");
 
                     b.Property<string>("Createdby")
@@ -1047,7 +1050,9 @@ namespace E_Learning.DAL.Migrations
                     b.Property<int?>("Yearid")
                         .HasColumnType("int");
 
-                    b.HasIndex("PlaceWithTimeId");
+                    b.HasIndex("PlaceWithTimeId")
+                        .IsUnique()
+                        .HasFilter("[PlaceWithTimeId] IS NOT NULL");
 
                     b.HasIndex(new[] { "Yearid" }, "IX_User_Yearid");
 
@@ -1164,7 +1169,7 @@ namespace E_Learning.DAL.Migrations
                         .IsRequired();
 
                     b.HasOne("E_Learning.DAL.Models.Place", "Place")
-                        .WithMany("PlaceWithTimes")
+                        .WithMany()
                         .HasForeignKey("PlaceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1455,8 +1460,8 @@ namespace E_Learning.DAL.Migrations
                         .IsRequired();
 
                     b.HasOne("E_Learning.DAL.Models.PlaceWithTime", "PlaceWithTime")
-                        .WithMany("Users")
-                        .HasForeignKey("PlaceWithTimeId");
+                        .WithOne("User")
+                        .HasForeignKey("E_Learning.DAL.User", "PlaceWithTimeId");
 
                     b.HasOne("E_Learning.DAL.Year", "Year")
                         .WithMany("Users")
@@ -1506,8 +1511,6 @@ namespace E_Learning.DAL.Migrations
 
             modelBuilder.Entity("E_Learning.DAL.Models.Place", b =>
                 {
-                    b.Navigation("PlaceWithTimes");
-
                     b.Navigation("userLectures");
 
                     b.Navigation("userQuizzes");
@@ -1517,7 +1520,7 @@ namespace E_Learning.DAL.Migrations
                 {
                     b.Navigation("OfflineLectures");
 
-                    b.Navigation("Users");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("E_Learning.DAL.Question", b =>

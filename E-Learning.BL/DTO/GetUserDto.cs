@@ -12,6 +12,7 @@ public class GetUserDto
     public string? Id { get; set; } 
 
     public string Username { get; set; } = null!;
+    public int? PlaceTimeId { get; set; }
 
     public string? FirstName { get; set; } = string.Empty;
 
@@ -20,7 +21,7 @@ public class GetUserDto
     public string? LastName { get; set; } = string.Empty;
 
     public string? PhoneNumber { get; set; }
-
+    public int? classid { get; set; }    
     public string? ParentPhoneNumber { get; set; }
     public string password { get; set; }
 }

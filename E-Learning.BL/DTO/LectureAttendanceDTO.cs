@@ -25,4 +25,9 @@ public class UserLectureAttendance
     public DateTime? end { get; set; }
     public string? accessby { get; set; }
     public DateTime? accessdate { get; set;}
+    public string ?Place { get; set; }
+    public string? LectureType {  get; set; }
+
+    public bool? assigmentattent { get; set; }
+    public int? Assigmentgrade { get; set; }
 }

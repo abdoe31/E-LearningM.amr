@@ -19,6 +19,7 @@ public partial class ELearningContext : IdentityDbContext
     {
     }
 
+     public virtual DbSet<Place>  Places { get; set; }
 
     public virtual DbSet<Answer> Answers { get; set; }
     public virtual DbSet<UserQuizAcess> UserQuizAcess { get; set; }
@@ -48,6 +49,8 @@ public partial class ELearningContext : IdentityDbContext
 
     public virtual DbSet<UserQuiz> UserQuizzes { get; set; }
     public virtual DbSet<Videofiles>  Videofiles { get; set; }
+    public virtual DbSet<PlaceWithTime>  PlacesWithTimes { get; set; }
+    public virtual DbSet<OfflineLecture>  OfflineLectures { get; set; }
 
     public virtual DbSet<VideoPart> VideoParts { get; set; }
 
@@ -59,6 +62,22 @@ public partial class ELearningContext : IdentityDbContext
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.Entity<IdentityUser>().UseTptMappingStrategy();
+
+        modelBuilder.Entity<Place>(entity =>
+        {
+            
+            entity.HasMany(d => d.userLectures).WithOne(p => p.Place)
+    .HasForeignKey(d => d.PlaceId);
+
+
+            entity.HasMany(d => d.userQuizzes).WithOne(p => p.Place)
+.HasForeignKey(d => d.PlaceId);
+
+
+
+
+        });
+
 
 
 
@@ -320,6 +339,8 @@ public partial class ELearningContext : IdentityDbContext
 
             entity.HasIndex(e => e.StudentId, "IX_UserLecture_StudentId");
 
+            entity.Property(e => e.LectureType).HasDefaultValue(LectureType.Online);
+
             entity.Property(e => e.Id)
                 .UseIdentityColumn()
                 .HasColumnName("id");
@@ -342,6 +363,7 @@ public partial class ELearningContext : IdentityDbContext
         modelBuilder.Entity<UserQuiz>(entity =>
         {
             entity.ToTable("UserQuiz");
+            entity.Property(e => e.QuizType).HasDefaultValue(LectureType.Online);
 
             entity.HasIndex(e => e.Quizid, "IX_UserQuiz_Quizid");
 

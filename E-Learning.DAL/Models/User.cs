@@ -25,7 +25,7 @@ public partial class User : IdentityUser
     public bool Active { get; set; }
 
     public int? Yearid { get; set; } 
-
+    public int? PlaceWithTimeId { get; set; }    
     public Role Role { get; set; }
 
     public string? UpdatedBy { get; set; }
@@ -35,6 +35,11 @@ public partial class User : IdentityUser
 
     public string Pasword { get; set; }
     public virtual Year? Year { get; set; }
+
+    public virtual PlaceWithTime? PlaceWithTime { get; set; }
+
+    public virtual ICollection<OfflineLecture> OfflineLectures { get; set; } = new List<OfflineLecture>();
+
     public virtual ICollection<LectureCode> LectureCodes { get; set; } = new List<LectureCode>();
 
     public virtual ICollection<UserAnswer> UserAnswers { get; set; } = new List<UserAnswer>();

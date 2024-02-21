@@ -71,7 +71,7 @@ namespace E_Learning.API.Controllers
                 SecondName = addStudentDto.SecondName.Trim(),
                 ParentPhoneNumber = addStudentDto.ParentPhoneNumber.Trim(),
                 Pasword = pass,
-                Role = addStudentDto.Role
+                Role = addStudentDto.Role , PlaceWithTimeId =addStudentDto.PlaceTimeId
             };
             if (addStudentDto.Yearid != null)
             {
@@ -198,7 +198,7 @@ namespace E_Learning.API.Controllers
                 SecondName = addStudentDto.SecondName.Trim(),
                 ParentPhoneNumber = addStudentDto.ParentPhoneNumber != null ? addStudentDto.ParentPhoneNumber.Trim() : null,
                 Pasword = pass,
-                Role = addStudentDto.Role
+                Role = addStudentDto.Role, PlaceWithTimeId = addStudentDto.PlaceTimeId
             };
             if (addStudentDto.Yearid != null)
             {

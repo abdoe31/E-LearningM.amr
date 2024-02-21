@@ -31,6 +31,8 @@ public string? AcessType { get; set; } = string.Empty;
 public DateTime? Start { get; set; }
 
 public DateTime? End { get; set; }
+    public string ? LectureType {  get; set; } = string.Empty;
+    public string? Place { get; set; } = string.Empty;
 
 
 }
