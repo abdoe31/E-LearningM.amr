@@ -1,6 +1,7 @@
 ﻿using E_Learning.BL;
 using E_Learning.DAL;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -88,21 +89,42 @@ namespace E_Learning.API.Controllers
         }
         [HttpGet("GetAllSibling")]
 
-        public IActionResult GetAllSibling()
+        public async Task<IActionResult> GetAllSiblingAsync()
         {
-            var outt = new List<userdata>();
-            var users = eLearningContext.Users.Where(x => x.Active == true && x.Role == Role.Student).OrderBy(x => x.StudentPhoneNumber).GroupBy(x => x.StudentPhoneNumber).ToList();
-            foreach (var item in users)
-            {
-                if (item.All(x => x.StudentPhoneNumber == item.FirstOrDefault().StudentPhoneNumber) && item.Count() > 1)
-                {
-                    outt.AddRange(item.Select(x => new userdata { username = x.Username, phone = x.StudentPhoneNumber, parentphone = x.ParentPhoneNumber }));
+            //var outt = new List<userdata>();
+            //var users = eLearningContext.Users.Where(x => x.Active == true && x.Role == Role.Student).OrderBy(x => x.StudentPhoneNumber).GroupBy(x => x.StudentPhoneNumber).ToList();
+            //foreach (var item in users)
+            //{
+            //    if (item.All(x => x.StudentPhoneNumber == item.FirstOrDefault().StudentPhoneNumber) && item.Count() > 1)
+            //    {
+            //        outt.AddRange(item.Select(x => new userdata { username = x.Username, phone = x.StudentPhoneNumber, parentphone = x.ParentPhoneNumber }));
 
-                }
-            }
+            //    }
+            //}
 
 
-            return new JsonResult(outt);
+
+            //var students = eLearningContext.Users.Include(x=>x.Parents) .Where (x => x.Role == Role.Student  &&x.Active == true    && x.Parents.ToList().Count()<1).ToList();
+
+            //int i = 0;
+            //foreach (var item in students)
+            //{
+            //    var user = eLearningContext.Users.Where(x => x.Username == item.Username).FirstOrDefault();
+
+            //    var client = new HttpClient();
+            //    client.BaseAddress = new Uri("https://amrbackend.azurewebsites.net/");
+
+            //    HttpResponseMessage response = await client.GetAsync($"api/User/AddParent/{user.Id}");
+            //    Console.WriteLine(response.IsSuccessStatusCode);
+
+            //    if (response.IsSuccessStatusCode)
+            //    {
+            //        i++;
+            //    }
+
+
+            //}
+;            return  Ok();
         }
 
 

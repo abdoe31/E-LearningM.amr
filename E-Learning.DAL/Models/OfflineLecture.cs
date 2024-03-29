@@ -21,6 +21,8 @@ namespace E_Learning.DAL.Models
 
         public int? AssighmentGrade { get; set; }
         public string? Notes { get; set; }
+        public string? ParentFeedBack { get; set; } = string.Empty;
+
         [ForeignKey("PlaceTime")]
         public int? PlaceTimeId { get; set; } 
         public virtual     User? User { get; set; }  

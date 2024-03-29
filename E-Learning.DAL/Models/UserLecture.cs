@@ -19,6 +19,8 @@ public partial class UserLecture
     public DateTime? Start { get; set; }
 
     public DateTime? End { get; set; }
+    public string? Notes { get; set; }   = string.Empty;
+    public string? ParentFeedBack { get; set; } = string.Empty;
 
     public bool QuizRequired { get; set; }
     public bool QuizSolved { get; set; }

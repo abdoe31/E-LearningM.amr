@@ -782,18 +782,18 @@ namespace E_Learning.API.Controllers
 
                 if (PlaceTimeId != null)
                 {
-                    var place = _ELearningContext.PlacesWithTimes.Where(x => x.id == PlaceTimeId).Include(x => x.Place).FirstOrDefault() ;
+                    var place = _ELearningContext.PlacesWithTimes.Where(x => x.id == PlaceTimeId).Include(x => x.Place).FirstOrDefault();
                     placethird = place.ClassId == 3;
 
-                  if (placethird)
+                    if (placethird)
                     {
                         var thirdplaces = _ELearningContext.PlacesWithTimes.Where(x => x.ClassId == 3 && x.PlaceId == place.PlaceId).ToList();
 
-                        Students = userManger.GetALLStudentsByClass((int)lecture.Classid).Where(x =>thirdplaces.Any(y=>y.id == x.PlaceId) ).OrderBy(x => x.Name).ToList();
+                        Students = userManger.GetALLStudentsByClass((int)lecture.Classid).Where(x => thirdplaces.Any(y => y.id == x.PlaceId)).OrderBy(x => x.Name).ToList();
 
                     }
-                    else { 
-                    Students = userManger.GetALLStudentsByClass((int)lecture.Classid).Where(x => x.PlaceId == PlaceTimeId).OrderBy(x => x.Name).ToList();
+                    else {
+                        Students = userManger.GetALLStudentsByClass((int)lecture.Classid).Where(x => x.PlaceId == PlaceTimeId).OrderBy(x => x.Name).ToList();
                     }
                 }
                 else
@@ -808,9 +808,9 @@ namespace E_Learning.API.Controllers
 
             foreach (var item in Students)
             {
-                var s = new lelctureUserAttendance { UserName = item.Name, userid = item.Id, PhoneNumber = item.PhoneNumber, ParentNumber = item.ParentPhoneNumber};
+                var s = new lelctureUserAttendance { UserName = item.Name, userid = item.Id, PhoneNumber = item.PhoneNumber, ParentNumber = item.ParentPhoneNumber };
 
-                var s2 = lecturedata.Where(x => x.UserId == item.Id).ToList();
+                var s2 = lecturedata.Where(x => x.UserId == item.Id && x.LectureId == Lectureid).ToList();
                 if (s2.IsNullOrEmpty())
                 {
 
@@ -824,15 +824,16 @@ namespace E_Learning.API.Controllers
                         s.userid = item.Id;
                         s.Attend = item1.Attend;
                         s.id = item1.id;
-                        s.placeid = item1.PlaceTimeId ;
-                        s.StartTime = item1.PlaceTime.StartTime;
-                        s.EndTiem = item1.PlaceTime.StartTime;
+                        s.placeid = item1.PlaceTimeId != null ? item1.PlaceTimeId : null;
+                        // s.StartTime = item1.PlaceTime.StartTime;
+                        //   s.EndTiem = item1.PlaceTime.StartTime;
                         s.edit = true;
                         s.type = "";
                         s.QuizGrade = item1.QuizGrade;
                         s.AssighmentGrade = item1.AssighmentGrade;
                         s.QuizAttend = item1.QuizAttend;
                         s.Note = item1.Notes;
+                        s.ParentFeedBack = item1.ParentFeedBack;
                         s.AssighmentAttend = item1.AssighmentAttend;
                         outt.Add(s);
 
@@ -849,18 +850,18 @@ namespace E_Learning.API.Controllers
 
             foreach (var item in Students)
             {
-                var s2 = lecturedata.Where(x => x.UserId == item.Id).ToList();
+                var s2 = lecturedata.Where(x => x.UserId == item.Id && x.LectureId == Lectureid).ToList();
                 if (s2.IsNullOrEmpty())
                 {
-                    lelctureUserAttendance s ;
+                    lelctureUserAttendance s;
                     if (placethird)
                     {
-                         s = new lelctureUserAttendance { UserName = item.Name, userid = item.Id, PhoneNumber = item.PhoneNumber, ParentNumber = item.ParentPhoneNumber, placeid = PlaceTimeId };
+                        s = new lelctureUserAttendance { UserName = item.Name, userid = item.Id, PhoneNumber = item.PhoneNumber, ParentNumber = item.ParentPhoneNumber, placeid = PlaceTimeId };
 
                     }
                     else
                     {
-                         s = new lelctureUserAttendance { UserName = item.Name, userid = item.Id, PhoneNumber = item.PhoneNumber, ParentNumber = item.ParentPhoneNumber, placeid = item.PlaceId };
+                        s = new lelctureUserAttendance { UserName = item.Name, userid = item.Id, PhoneNumber = item.PhoneNumber, ParentNumber = item.ParentPhoneNumber, placeid = item.PlaceId == null ? null : item.PlaceId };
 
                     }
 
@@ -875,6 +876,7 @@ namespace E_Learning.API.Controllers
 
 
 
+        
 
         [HttpPost("AddEditDeleteOfflineLecture")]
         public async Task<IActionResult> AddEditDeleteOfflineLecture(AddeditremoveAttend addeditremoveAttend)
@@ -943,6 +945,7 @@ namespace E_Learning.API.Controllers
                     OfflineLecture.UpdatedBy = Adminname;
                     OfflineLecture.UpdatedDate = DateTime.Now;
                     OfflineLecture.Notes = addeditremoveAttend.Note;
+                    OfflineLecture.ParentFeedBack = addeditremoveAttend.ParentFeedBack;
                     OfflineLecture.Attend = addeditremoveAttend.Attend;
 
                 }
@@ -961,7 +964,7 @@ namespace E_Learning.API.Controllers
                 .QuizGrade,
                     AssighmentGrade = addeditremoveAttend
                 .AssighmentGrade,
-                    Notes = addeditremoveAttend.Note,
+                    Notes = addeditremoveAttend.Note, ParentFeedBack = addeditremoveAttend.ParentFeedBack,
                     Attend = addeditremoveAttend.Attend,
                     PlaceTimeId = addeditremoveAttend.placeid == null ? student.PlaceWithTimeId : addeditremoveAttend.placeid,
                 };
@@ -1113,13 +1116,17 @@ namespace E_Learning.API.Controllers
 
             if (addonlineass.Attend != null && addonlineass.Attend == true)
             {
-
+                lecture.Notes = addonlineass.Notes;
+                lecture.ParentFeedBack = addonlineass.ParentFeedBack;
                 lecture.AssighmentSolved = true;
                 lecture.AssighmentGrade = addonlineass.grade;
 
             }
             else if (addonlineass.Attend == false || addonlineass.Attend == null)
             {
+                lecture.Notes = addonlineass.Notes;
+                lecture.ParentFeedBack = addonlineass.ParentFeedBack;
+
                 lecture.AssighmentSolved = false;
                 lecture.AssighmentGrade = null;
 
@@ -1145,6 +1152,193 @@ namespace E_Learning.API.Controllers
         }
 
 
+        [HttpGet("GetStudentAttendancewithGrades/{studentid}")]
+
+
+        public ActionResult GetStudentAttendancewithGrades( string studentid)
+        {
+
+                var Student = _ELearningContext.Users.Where(x => x.Id == studentid).Include(x => x.UserLectures).ThenInclude(x => x.Lecture).Include(x => x.UserQuizzes).ThenInclude(x => x.UserAnswers).ThenInclude(x=>x.Question).Include(x => x.UserQuizzes).ThenInclude(x=>x.Quiz).ThenInclude(x=>x.Lectures) .Include(x=>x.OfflineLectures).ThenInclude(x=>x.Lecture).Include(x => x.OfflineLectures).ThenInclude(x => x.PlaceTime).ThenInclude(x => x.Place).FirstOrDefault();
+
+            var offlineLectures = Student.OfflineLectures.ToList();
+            var OnlineLecture = Student.UserLectures.ToList();
+            var userquiz = Student.UserQuizzes.ToList();
+
+
+            List<studnetAttendance> OfflineAtttendance = offlineLectures.Select(x => new studnetAttendance
+            { 
+                 lectnumber= x.Lecture.number,
+                LectureName = x.Lecture.Header,
+                Atteend = x.Attend,
+                AssigmentSolve = x.AssighmentAttend,
+                AssigmentGrade = x.AssighmentGrade,
+                Details = x.Attend == true ? $"{x.PlaceTime.Place.name} {x.PlaceTime.DayOfWeek.ToString()}  ({x.PlaceTime.StartTime}) ({x.PlaceTime.PlaceType.ToString()}) " : " "
+                , ParentFeedBack =x.ParentFeedBack,
+                note = x.Notes,
+                QuizSolve = x.QuizAttend,
+                QuizGrade = x.QuizAttend==true ?  x.QuizGrade.ToString():null
+
+
+            }).ToList() ;
+
+            List<studnetAttendance> OnlineAttendance = new List<studnetAttendance>();
+
+
+
+            foreach (var item in OnlineLecture)
+            {
+                var online = new studnetAttendance { LectureName = item.Lecture.Header,
+                    lectnumber = item.Lecture.number
+, AssigmentGrade = item.AssighmentGrade, AssigmentSolve = item.AssighmentSolved , note=item.Notes  , ParentFeedBack =item.ParentFeedBack};
+
+
+                if (item.Start == null)
+                {
+
+                    online.Atteend = false;
+                    online.Details = "Student Have Acess But didnt watch the lecture Yet ";
+                }
+                else
+                {
+                    online.Atteend = true;
+
+                    online.Details = $" Online   from {item.Start.ToString()} To {item.End.ToString()} ";
+
+                }
+                 if (item.Lecture.Quizid == null)
+                {
+                    online.QuizSolve = false;
+                    online.QuizGrade = "there is no quiz in this lecture ";
+
+                }else
+                {
+                    var quiz = Student.UserQuizzes.Where(x => x.Quiz.Id == item.Lecture.Quizid).FirstOrDefault();
+                    if (quiz is null)
+                    {
+                        online.QuizSolve = false;
+                        online.QuizGrade = "Student didnt solve the quiz ";
+
+                    }
+                    else
+                    {
+                        online.QuizSolve = true;
+                        online.QuizGrade = quiz.GetUserQuizGrade().ToString();
+
+                    }
+
+                }
+
+                OnlineAttendance.Add(online);
+
+            }
+
+
+            var quizes = Student.UserQuizzes.Where(x=> x.Quiz.quizType== QuizType.lecture &&  (! OnlineLecture.Any(y=> x.Quiz.Lectures.FirstOrDefault().Id==y.Id))   ).ToList();
+
+            List<studnetAttendance> quizwithoutlecture  = new List<studnetAttendance>   () ;
+            foreach (var item1 in quizes)
+            {
+
+                var lecture = Student.UserLectures.Where(x => item1.Quiz.Lectures.Any(y => y.Id == x.Lectureid)).ToList();
+                var lecturedata = _ELearningContext.Lectures.Where(x => x.Quizid == item1.Quizid).FirstOrDefault();
+                if (lecture.IsNullOrEmpty())
+                {
+
+                    var online = new studnetAttendance { LectureName = lecturedata.Header,  lectnumber= lecturedata.number, AssigmentGrade = null, AssigmentSolve = false, note = null };
+
+                    online.QuizSolve = true;
+                    online.QuizGrade = item1.GetUserQuizGrade().ToString();
+                    online.Atteend = false;
+                    online.Details = "Student doesnt Have  Acess To this lecture  ";
+
+                    quizwithoutlecture.Add(online);
+
+                }
+                else
+                {
+
+
+
+                    foreach (var item in lecture)
+                    {
+
+
+                        var online = new studnetAttendance { LectureName = item.Lecture.Header, lectnumber =item.Lecture.number, AssigmentGrade = item.AssighmentGrade, AssigmentSolve = item.AssighmentSolved, note = item.Notes  , ParentFeedBack = item.ParentFeedBack};
+
+
+                        if (item.Start == null)
+                        {
+
+                            online.Atteend = false;
+                            online.Details = "Student Have Acess But didnt watch the lecture Yet ";
+                        }
+                        else
+                        {
+                            online.Atteend = true;
+
+                            online.Details = $" Online   from {item.Start.ToString()} To {item.End.ToString()} ";
+
+                        }
+                        if (item.Lecture.Quizid == null)
+                        {
+                            online.QuizSolve = false;
+                            online.QuizGrade = "there is no quize in this lecture ";
+
+                        }
+                        else
+                        {
+                            var quiz = Student.UserQuizzes.Where(x => x.Quiz.Id == item.Lecture.Quizid).FirstOrDefault();
+                            if (quiz is null)
+                            {
+                                online.QuizSolve = false;
+                                online.QuizGrade = "Student didnt solve the quize ";
+
+                            }
+                            else
+                            {
+                                online.QuizSolve = true;
+                                online.QuizGrade = quiz.GetUserQuizGrade().ToString();
+
+                            }
+
+                        }
+
+                        quizwithoutlecture.Add(online);
+
+                    }
+                }
+            }
+
+
+
+
+            var all = new List<studnetAttendance>();
+            all.AddRange(OfflineAtttendance);
+            all.AddRange(OnlineAttendance);
+            all.AddRange(quizwithoutlecture);
+
+
+
+            return Ok(   new { name = $"{Student.FirstName}  {Student.SecondName}  {Student.LastName}", lectureuserAcessds = all.OrderBy(x=>x.lectnumber) });
+        }
+
+
+    }
+
+    public class studnetAttendance {
+        public int? lectnumber { get; set; }
+        public string LectureName { get; set; }
+        public bool? Atteend { get; set; }
+
+        public string Details { get; set; }
+        public bool ?AssigmentSolve { get; set; }    
+        public int? AssigmentGrade { get; set;  }
+
+        public bool? QuizSolve { get; set; }
+        public string? QuizGrade {get; set; }
+        public string note { get; set; }
+        public string ParentFeedBack { get; set; }
+
 
 
 
@@ -1154,6 +1348,8 @@ namespace E_Learning.API.Controllers
 
         public int? id { get; set; }
 public int? grade { get; set; } 
+        public string Notes { get; set; }
+        public string ParentFeedBack { get; set; }
 
         public bool? Attend { get; set; }    
     }
@@ -1203,6 +1399,7 @@ public string Name { get; set; }
         public int? QuizGrade { get; set; }
         public int? AssighmentGrade { get; set; }
         public string? Note { get; set; }
+        public string? ParentFeedBack { get; set; } 
 
         public int? placeid { get; set; }
 
@@ -1230,6 +1427,7 @@ public string Name { get; set; }
         public int? QuizGrade { get; set; }
         public int? AssighmentGrade { get; set; }
         public string? Note { get; set; }
+        public string? ParentFeedBack { get; set; } 
 
         public string? type { get; set; }
 

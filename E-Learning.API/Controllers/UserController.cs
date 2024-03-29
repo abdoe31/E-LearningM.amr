@@ -542,8 +542,10 @@ namespace E_Learning.API.Controllers
 
                 if (parent == null)
                 {
-                    var addparent = new AddStudentDto { Active = true, FirstName = user.SecondName, SecondName = user.LastName, PhoneNumber = user.ParentPhoneNumber, Role = Role.Parent };
-                    parent = Adduser(addparent).Result.Value;
+                  
+var addparent = new AddStudentDto { Active = true, FirstName = user.SecondName, SecondName = user.LastName, PhoneNumber = user.ParentPhoneNumber, Role = Role.Parent };
+
+                    parent =   Adduser(addparent).Result.Value;
                     parentexist = false;
 
                 }

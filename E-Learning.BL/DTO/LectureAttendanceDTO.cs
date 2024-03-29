@@ -27,7 +27,8 @@ public class UserLectureAttendance
     public DateTime? accessdate { get; set;}
     public string ?Place { get; set; }
     public string? LectureType {  get; set; }
-
+    public string? Note { get; set; }
+    public string ParentFeedBack {  get; set; }
     public bool? assigmentattent { get; set; }
     public int? Assigmentgrade { get; set; }
 }

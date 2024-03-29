@@ -286,7 +286,7 @@ public class LectureManger : ILectureManger
             accesstype = x.AcessType.ToString(), accessby = x.Createdby != null ? x.Createdby.ToString() : null
             ,
             accessdate = x.Createddate !=null ?  x.Createddate : null
-            , LectureType = x.LectureType.ToString(), Place = x.Place?.name , assigmentattent = x.AssighmentSolved , Assigmentgrade = x.AssighmentGrade
+            , LectureType = x.LectureType.ToString(), Place = x.Place?.name , assigmentattent = x.AssighmentSolved , Assigmentgrade = x.AssighmentGrade , Note = x. Notes  , ParentFeedBack = x.ParentFeedBack
         }
 
         ).ToList()
