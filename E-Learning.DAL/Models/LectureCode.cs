@@ -19,6 +19,7 @@ public partial class LectureCode
     public string? GeneratedBy { get; set; }
      public int? duration { get; set; }
     public DateTime? Usedate { get; set; }
+    public DayOrHour? DayOrHour { get; set; } = 0;
 
     public bool Used { get; set; }
     public bool? QuizRequired { get; set; }

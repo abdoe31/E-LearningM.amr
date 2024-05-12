@@ -540,12 +540,12 @@ namespace E_Learning.API.Controllers
 
         public async Task<IActionResult> gettimefromdatabase()
         {
-            var time = _ELearningContext.UserQuizzes.FirstOrDefault(x => x.Id == 4).End;
+         //   var time = _ELearningContext.UserQuizzes.FirstOrDefault(x => x.Id == 4).End;
 
-            var t = DateTime.SpecifyKind((DateTime)time, DateTimeKind.Local);
+          //  var t = DateTime.SpecifyKind((DateTime)time, DateTimeKind.Local);
 
-            var x = new tt { d = t };
-            return Ok(x);
+          //  var x = new tt { d = DateTime.Now };
+            return Ok(new { x = DateTime.Now});
 
         }
 

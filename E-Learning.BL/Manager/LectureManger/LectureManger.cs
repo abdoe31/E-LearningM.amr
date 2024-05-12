@@ -61,7 +61,7 @@ public class LectureManger : ILectureManger
                         QuizRequired = false,
                         Duration = item.Duration ,
                         Createdby = name,
-                        Createddate = DateTime.Now
+                        Createddate = DateTime.Now , DayOrHour = item.DayOrHour
                     };
 
                     UserLectures.Add(userLecture);
@@ -75,7 +75,8 @@ public class LectureManger : ILectureManger
                     AcessType = item.AcessType,
                     StudentId = item.UserId,
                     QuizRequired = item.quizrequird,
-                    Duration = item.Duration , Createdby=name , Createddate = DateTime.Now
+                    Duration = item.Duration , Createdby=name , Createddate = DateTime.Now,
+                    DayOrHour = item.DayOrHour
                 };
 
                 UserLectures.Add(userLecture);
@@ -181,7 +182,7 @@ public class LectureManger : ILectureManger
             one.GeneratedAt = DateTime.Now;
             one.GeneratedBy = name;
             one.duration = postCodegenerateddto.duration;
-            
+            one.DayOrHour = postCodegenerateddto.DayOrHour;
             one.QuizRequired = postCodegenerateddto.QuizRequird;
             
             codes.Add(one);
@@ -282,11 +283,20 @@ public class LectureManger : ILectureManger
             UserName = $"{x.Student.FirstName}  {x.Student.SecondName}  {x.Student.LastName}",
             start = x.Start,
             end = x.End
-            , id = x.Id, 
-            accesstype = x.AcessType.ToString(), accessby = x.Createdby != null ? x.Createdby.ToString() : null
             ,
-            accessdate = x.Createddate !=null ?  x.Createddate : null
-            , LectureType = x.LectureType.ToString(), Place = x.Place?.name , assigmentattent = x.AssighmentSolved , Assigmentgrade = x.AssighmentGrade , Note = x. Notes  , ParentFeedBack = x.ParentFeedBack
+            id = x.Id,
+            accesstype = x.AcessType.ToString(),
+            accessby = x.Createdby != null ? x.Createdby.ToString() : null
+            ,
+            accessdate = x.Createddate != null ? x.Createddate : null
+            ,
+            LectureType = x.LectureType.ToString(),
+            Place = x.Place?.name,
+            assigmentattent = x.AssighmentSolved,
+            Assigmentgrade = x.AssighmentGrade,
+            Note = x.Notes,
+            ParentFeedBack = x.ParentFeedBack,
+            time = x.DayOrHour ==  DayOrHour.day || x.DayOrHour == null ?  x.Duration *24 : x.Duration 
         }
 
         ).ToList()
@@ -451,6 +461,7 @@ public class LectureManger : ILectureManger
             StudentId = userid,
             QuizRequired = (bool)lecturecode.QuizRequired ,
             LectureType = LectureType.Online
+            , DayOrHour = lecturecode.DayOrHour
         });
         return _UnitOfWork.SaveChanges();
     }
@@ -463,12 +474,15 @@ public class LectureManger : ILectureManger
 
         if(userlecture.Duration != null)
         {
+            if (userlecture.DayOrHour==DayOrHour.day || userlecture.DayOrHour == null)
             userlecture.End = DateTime.Now.AddDays((int)userlecture.Duration);
+            else if (userlecture.DayOrHour == DayOrHour.hour)
+                userlecture.End = DateTime.Now.AddHours((int)userlecture.Duration);
 
 
         }
 
-       var state =  _UnitOfWork.SaveChanges();
+        var state =  _UnitOfWork.SaveChanges();
         if (state > 0)
         {
 

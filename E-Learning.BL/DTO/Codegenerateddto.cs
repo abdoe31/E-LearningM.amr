@@ -26,7 +26,7 @@ namespace E_Learning.BL
         public int  NumberofCode { get; set; }
         public bool QuizRequird { get; set; }
         public int duration { get; set; }
-
+        public DayOrHour? DayOrHour { get; set; }
 
     }
 

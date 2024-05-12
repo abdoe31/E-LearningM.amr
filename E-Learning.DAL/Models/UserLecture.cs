@@ -29,6 +29,7 @@ public partial class UserLecture
     public DateTime? Createddate { get; set; } 
     public int? AssighmentGrade {  get; set; }   
     public int? Duration { get; set; }
+    public DayOrHour? DayOrHour { get; set; } = 0 ;
     public LectureType? LectureType { get; set; } = DAL.LectureType.Online;
     public virtual Lecture? Lecture { get; set; }
 

@@ -4,6 +4,7 @@ using E_Learning.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace E_Learning.DAL.Migrations
 {
     [DbContext(typeof(ELearningContext))]
-    partial class ELearningContextModelSnapshot : ModelSnapshot
+    [Migration("20240413061308_AddHoursToAccess")]
+    partial class AddHoursToAccess
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -172,9 +175,6 @@ namespace E_Learning.DAL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("CodeTybe")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("DayOrHour")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("GeneratedAt")

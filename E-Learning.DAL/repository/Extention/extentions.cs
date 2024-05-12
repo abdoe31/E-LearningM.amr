@@ -45,4 +45,9 @@ namespace E_Learning.DAL
         }
 
     }
+
+  public  enum DayOrHour
+    {
+        day,hour, minute, second, millisecond
+    }
 }

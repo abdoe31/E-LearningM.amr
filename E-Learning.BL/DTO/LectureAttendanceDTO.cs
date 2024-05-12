@@ -31,4 +31,5 @@ public class UserLectureAttendance
     public string ParentFeedBack {  get; set; }
     public bool? assigmentattent { get; set; }
     public int? Assigmentgrade { get; set; }
+    public double? time { get; set; }
 }

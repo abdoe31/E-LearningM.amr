@@ -14,5 +14,6 @@ public class AddLectureAcessDto
     public bool quizrequird { get; set; }   
     public int Duration { get; set; }
     public AcessType AcessType { get; set; }
-
+     
+    public DayOrHour? DayOrHour { get; set; }    
 }
