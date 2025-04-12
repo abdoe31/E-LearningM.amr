@@ -12,7 +12,7 @@ public class UpdateLectureDto
 
     public int LectureId { get; set; }
     public int? Classid { get; set; }
-
+    public int ? Number { get; set; }   
     public string? Header { get; set; }
 
     public int? Quizid { get; set; }

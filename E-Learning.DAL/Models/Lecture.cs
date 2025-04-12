@@ -23,7 +23,7 @@ public partial class Lecture
     public string? UpdatedBy { get; set; }
 
     public DateTime? Updatedat { get; set; }
-
+    public bool ? Active { get; set; }  = true; 
     public virtual Assighment? Assighnment { get; set; }
 
     public virtual Class? Class { get; set; }

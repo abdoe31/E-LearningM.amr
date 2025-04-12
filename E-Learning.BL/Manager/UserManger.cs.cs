@@ -253,6 +253,26 @@ namespace E_Learning.BL
 
         public ICollection<GetStudentforMangmentdto> GetALLStudentsByClass(int classid)
         {
+            if (classid < 0)
+            {
+              return  _LearningContext.Users.Where(x => x.Role == Role.Student && x.Classes.Count<1).Select(x => new GetStudentforMangmentdto
+                {
+
+
+
+                    Active = x.Active,
+                    Id = x.Id,
+                    Name = $"{x.FirstName}  {x.SecondName} {x.LastName}",
+                    ParentPhoneNumber = x.ParentPhoneNumber,
+                    Pasword = x.Pasword,
+                    PhoneNumber = x.StudentPhoneNumber,
+                    PlaceId = x.PlaceWithTimeId,
+                    Username = x.Username,
+                    Haveparent = x.Parents.Count() > 0,
+                    userYear = new UserYearDTO { Id = x.Yearid, Name = x.Year.Name, Classes = null }
+
+                }).ToList();
+            }
             var x = _UnitOfWork._Userrepository.GetStudentsByClass(classid).Users.Select(x => new GetStudentforMangmentdto
             {
                 Active = x.Active,
@@ -268,7 +288,7 @@ namespace E_Learning.BL
 
             return x;
         }
-
+        
         public int UpdateUser(GetUserDto user)
         {
 

@@ -149,6 +149,8 @@ public partial class ELearningContext : IdentityDbContext
 
                 .HasForeignKey(d => d.Quizid)
                 .HasConstraintName("FK_Lecture_Quizes");
+
+            entity.Property(x=>x.Active ).HasDefaultValue(true);    
         });
 
         modelBuilder.Entity<LectureCode>(entity =>
@@ -234,7 +236,7 @@ public partial class ELearningContext : IdentityDbContext
             entity.Property(e => e.ParentPhoneNumber).HasMaxLength(50);
             entity.Property(e => e.StudentPhoneNumber).HasMaxLength(50);
             entity.Property(e => e.SecondName).HasMaxLength(50);
-
+            entity.HasMany(x => x.OfflineLectures  ).WithOne(x=>x.User).HasForeignKey(x => x.UserId).OnDelete(deleteBehavior:DeleteBehavior.Cascade);
             entity.HasMany(x => x.Children).WithMany(x => x.Parents).UsingEntity<Dictionary<string, object>>(
                     "ParentWithChild",
                     r => r.HasOne<User>().WithMany()

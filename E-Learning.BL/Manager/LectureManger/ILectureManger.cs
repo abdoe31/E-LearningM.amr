@@ -19,9 +19,10 @@ public interface ILectureManger
     int UpdateLecture(UpdateLectureDto updateLectureDto);
     int UpdateLecture2(UpdateLectureDto updateLectureDto);
     List<LectureDetailsDto> GetLectureList(int Classid);
-
+    List<Selectdto> GetLectureListForStudent(int Classid);
     UserLecturedto GetStudentLectureAttendence(string Studentid);
     LectureAttendanceDTO GetLectureAttendance(int lectureId);
+     int ChangeLectureVisibility (ChangeActive changeActive);
     List<Codegenerateddto> GenerateCodes(PostCodegenerateddto postCodegenerateddto, string name);
     List<GetCodesDTO> GetCodes(int Lectureid);
 

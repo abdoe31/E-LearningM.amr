@@ -124,7 +124,7 @@ namespace E_Learning.API.Controllers
 
 
             //}
-;            return  Ok();
+;            return  Ok(DateTime.Now);
         }
 
 

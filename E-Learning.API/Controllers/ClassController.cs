@@ -1,4 +1,5 @@
 ﻿using E_Learning.BL;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -7,6 +8,8 @@ namespace E_Learning.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
+
     public class ClassController : ControllerBase
     {
         private readonly IClassManger _Classmanger;

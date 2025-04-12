@@ -14,10 +14,11 @@ public class LectureDetailsDto
 
     public string? Header { get; set; }
     public int? Quizid { get; set; }
-
+    public bool? IsActive { get; set; }
     public int? Assighnmentid { get; set; }
-
+    public int? ClassId { get; set; }    
     public string? QuizName { get; set; }
+    public int ? number { get; set; }
 
     public string? AssighnmentName{ get; set; }
 }

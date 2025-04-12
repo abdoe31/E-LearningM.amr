@@ -300,6 +300,7 @@ namespace E_Learning.API.Controllers
 
         [HttpPost]
         [Route("GetStudents")]
+        [Authorize]
 
         public IActionResult GetStudents(Filter filter)
         {
@@ -322,8 +323,31 @@ namespace E_Learning.API.Controllers
 
 
 
+
+        [HttpPost]
+        [Route("DeleteStudents")]
+     //   [Authorize]
+
+        public IActionResult DeleteStudents()
+        {
+            var studentsdelete = eLearningContext.Users.Include(x=>x.Classes). Where(x=>x.Role == Role.Student &&  (   x.Active == false ||   (x.Classes.Count()==0)  )).ToList();
+            Console.WriteLine(studentsdelete.Count); 
+
+            foreach (var student in studentsdelete)
+            {
+
+                _UserManger.DeleteUser(student.Id);
+                Console.WriteLine(student.Yearid);
+            }
+
+            return BadRequest();
+        }
+
+
+
         [HttpPost]
         [Route("ChangeStudentStatu")]
+        [Authorize]
 
         public IActionResult ChangeStudentStatu(changeUserStatu changeUserStatu)
         {
@@ -346,6 +370,8 @@ namespace E_Learning.API.Controllers
         [HttpPut]
         [Route("ChangePassword")]
         //[Authorize(Roles =  "Admin")]
+        [Authorize]
+
         public async Task<IActionResult> ChangePassword(ChangePassoworddto changePassoworddto)
         {
             if (!ModelState.IsValid)
@@ -391,6 +417,7 @@ namespace E_Learning.API.Controllers
 
         [HttpGet]
         [Route("GetUser/{id}")]
+        [Authorize]
 
         public IActionResult GetUser(string id)
         {
@@ -399,6 +426,8 @@ namespace E_Learning.API.Controllers
         }
         [HttpPut]
         [Route("UpdateUser")]
+        [Authorize]
+
         public IActionResult UpdateUser(GetUserDto getUserDto)
         {
             var state = _UserManger.UpdateUser(getUserDto);
@@ -416,6 +445,7 @@ namespace E_Learning.API.Controllers
 
         [HttpGet]
         [Route("GetAdmins")]
+        [Authorize]
 
         public IActionResult GetAdmins()
         {
@@ -426,7 +456,10 @@ namespace E_Learning.API.Controllers
 
         }
 
+
         [HttpGet("userHome")]
+        [Authorize]
+
         public IActionResult userHome(string userid)
         {
 
@@ -450,6 +483,8 @@ namespace E_Learning.API.Controllers
 
 
         [HttpPost("DeleteUser")]
+        [Authorize]
+
         public IActionResult DeleteUser(DeleteUserDto deleteUserDto)
         {
             //  var user  =  _UnitOfWork._Userrepository.GetUser(userid);
@@ -469,6 +504,8 @@ namespace E_Learning.API.Controllers
         }
 
         [HttpPost("DeleteParent")]
+        [Authorize]
+
         public async Task<IActionResult> DeleteParent(DeleteUserDto deleteUserDto)
         {
 
@@ -505,6 +542,8 @@ namespace E_Learning.API.Controllers
         }
 
         [HttpGet("GetAllParents/{Classid}")]
+        [Authorize]
+
         public ActionResult<List<GetParentsDto>> GetAllParents(int? Classid)
         {
             var parents = eLearningContext.Users.Where(x => x.Role == Role.Parent && (Classid ==0 ? true : x.Children.Any(x=>x.Classes.Any(x=>x.Id==Classid)) )).Include(x => x.Children).Select(x => new GetParentsDto

@@ -25,6 +25,20 @@ public class LectureManger : ILectureManger
 
     }
 
+    public int   ChangeLectureVisibility(ChangeActive changeActive)
+    {
+        var Lecture =  _eLearningContext.Lectures.Where(x=>x.Id == changeActive.Id).FirstOrDefault();
+        if (Lecture != null)
+        {
+            Lecture.Active = changeActive.IsActive;
+          _eLearningContext.Lectures.Update(Lecture);   
+            return _eLearningContext.SaveChanges();
+
+        }
+
+        return -1;
+    }
+
     public int AddAcessToUser(List<AddLectureAcessDto> addLectureAcessDtos , string name)
     {
         if (addLectureAcessDtos.IsNullOrEmpty())
@@ -319,7 +333,29 @@ public class LectureManger : ILectureManger
 
 
         return Lectures.Select(x => new LectureDetailsDto { Header = x.Header, Assighnmentid = x.Assighnmentid, AssighnmentName = x.Assighnment.Header,
-            ClassName = x.Class.Name, LectureId = x.Id, Quizid = x.Quizid, QuizName = x.Quiz.Header }).ToList();
+            ClassName = x.Class.Name, ClassId=x.Classid, number = x.number , LectureId = x.Id, Quizid = x.Quizid, QuizName = x.Quiz.Header , IsActive = x.Active }).ToList();
+    }
+
+
+
+    public List<Selectdto> GetLectureListForStudent(int Classid)
+    {
+        var Lectures = _eLearningContext.Lectures.Where(x => x.Classid == Classid && x.Active == true).OrderBy(x => x.number);
+
+
+        if (Lectures.IsNullOrEmpty())
+        {
+
+
+            return null;
+        }
+
+
+        return Lectures.Select(x => new Selectdto
+        {
+            id = x.Id, name = x.Header
+            
+        }).ToList();
     }
 
     public UsersCLass GetLectureWithUsers(int Lectureid)
@@ -393,13 +429,20 @@ public class LectureManger : ILectureManger
     public int UpdateLecture(UpdateLectureDto updateLectureDto)
     {
         var lecture = _eLearningContext.Lectures.Where(x => x.Id == updateLectureDto.LectureId).FirstOrDefault();
-
+        
         if (lecture == null) { return -1; }
+        if (updateLectureDto.Number != null)
+        {
 
-        lecture.Classid = updateLectureDto.Classid;
+
+            lecture.number = updateLectureDto.Number;
+        }
+        //  lecture.Classid = updateLectureDto.Classid;
         lecture.Header = updateLectureDto.Header;
         lecture.Quizid = updateLectureDto.Quizid;
         lecture.Assighnmentid = updateLectureDto.Assighnmentid;
+
+        _eLearningContext.Update(lecture);
         return _UnitOfWork.SaveChanges();
 
     }

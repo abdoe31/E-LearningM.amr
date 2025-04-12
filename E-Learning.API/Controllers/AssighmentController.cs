@@ -12,6 +12,8 @@ namespace E_Learning.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
+
     public class AssighmentController : ControllerBase
     {
         private readonly IAssighmentManger _Assighmenger;

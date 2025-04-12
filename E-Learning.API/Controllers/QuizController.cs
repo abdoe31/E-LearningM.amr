@@ -1,7 +1,9 @@
 ﻿using E_Learning.BL;
 using E_Learning.DAL;
 using E_Learning.DAL.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -12,6 +14,7 @@ namespace E_Learning.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class QuizController : ControllerBase
     {
         private readonly IQuizManger _quizManger;
@@ -327,7 +330,10 @@ namespace E_Learning.API.Controllers
 
                 eLearningContext.UserQuizzes.Add(UserQuiz);
                 eLearningContext.SaveChanges();
-                return Ok(new getquiztosolvedto { start = DateTime.SpecifyKind((DateTime)UserQuiz.Start, DateTimeKind.Local), end =DateTime.SpecifyKind( (DateTime) UserQuiz.End , DateTimeKind.Local) ,  quiestions = _quizManger.GetQustionWithAnswers(checkquizSolved.quizid), userquiz = UserQuiz.Id });
+      var resutl  = new getquiztosolvedto { start = DateTime.SpecifyKind((DateTime)UserQuiz.Start, DateTimeKind.Local), end =DateTime.SpecifyKind( (DateTime) UserQuiz.End , DateTimeKind.Local) ,  quiestions = _quizManger.GetQustionWithAnswers(checkquizSolved.quizid), userquiz = UserQuiz.Id };
+
+                resutl.Seconds  = (resutl.end - resutl.start).TotalSeconds;
+                return Ok (resutl);
 
             }
 
@@ -341,8 +347,9 @@ namespace E_Learning.API.Controllers
 
           //  return Ok(new { start = UserQuiz.Start, end = UserQuiz.End, l = 5, quiestions = _quizManger.GetQustionWithAnswers2(UserQuiz.Id), userquiz = UserQuiz.Id });
 
-            return Ok(new  { start = DateTime.SpecifyKind((DateTime)UserQuiz.Start, DateTimeKind.Local), end = DateTime.SpecifyKind((DateTime)UserQuiz.End, DateTimeKind.Local), quiestions = _quizManger.GetQustionWithAnswers2(UserQuiz.Id ), userquiz = UserQuiz.Id });
-
+             var  outresult = new getquiztosolvedto { start = DateTime.SpecifyKind((DateTime)UserQuiz.Start, DateTimeKind.Local), end = DateTime.SpecifyKind((DateTime)UserQuiz.End, DateTimeKind.Local), quiestions = _quizManger.GetQustionWithAnswers2(UserQuiz.Id ), userquiz = UserQuiz.Id };
+            outresult.Seconds = (outresult.end - DateTime.Now).TotalSeconds;
+            return Ok (outresult);  
         }
 
 
@@ -794,6 +801,7 @@ namespace E_Learning.API.Controllers
 
         public DateTime start {  get; set; }    
         public DateTime end { get; set; }   
+        public double Seconds {  get; set; }    
         public GetQustionWithAnswersDto quiestions {  get; set; } 
         public int userquiz {  get; set; }  
 

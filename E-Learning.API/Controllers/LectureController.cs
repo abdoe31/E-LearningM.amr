@@ -4,6 +4,7 @@ using E_Learning.BL.DTO;
 using E_Learning.DAL;
 using E_Learning.DAL.Migrations;
 using E_Learning.DAL.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
@@ -20,6 +21,7 @@ namespace E_Learning.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class LectureController : ControllerBase
     {
         private readonly ILectureManger _LectureManger;
@@ -136,15 +138,26 @@ namespace E_Learning.API.Controllers
         }
 
 
+        [HttpPost("ChangeLectureVisibility")]
+
+        public IActionResult ChangeLectureVisibility(ChangeActive changeActive)
+        {
+            var responce = _LectureManger.ChangeLectureVisibility(changeActive);
+if (responce < 0)
+            {
+                return BadRequest(responce);
+            }
+
+return Ok(responce);    
+
+        }
+
+
         [HttpGet("GetLectureListToStudent/{Classid}")]
 
-        public IActionResult GetLectureListToStudent(int Classid)
+        public IActionResult GetLectureListForStudent(int Classid)
         {
-
-            var lec = _LectureManger.GetLectureList(Classid);
-
-            List<lecname> lectures = lec.Select(x => new lecname { id = x.LectureId, Lecturename = x.Header }).ToList();
-            return Ok(lectures);
+            return Ok(_LectureManger.GetLectureListForStudent(Classid));
 
 
         }
