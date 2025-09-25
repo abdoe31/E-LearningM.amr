@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-and-deploy:
-    runs-on: windows-latest   # GitHub-hosted runner (free)
+    runs-on: windows-latest
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -21,10 +21,31 @@ jobs:
     - name: Publish project
       run: dotnet publish E-Learning.API/E-Learning.API.csproj -c Release -o ${{ github.workspace }}\output
 
-    - name: Deploy to IIS using Web Deploy
+    - name: Stop IIS site
+      shell: pwsh
       run: |
-        "C:\Program Files\IIS\Microsoft Web Deploy V3\msdeploy.exe" ^
-          -verb:sync ^
-          -source:contentPath="${{ github.workspace }}\output" ^
-          -dest:contentPath="Thematrixapi",computerName="${{ secrets.DEPLOY_SERVER }}",userName="${{ secrets.DEPLOY_USER }}",password="${{ secrets.DEPLOY_PASS }}",authType=Basic ^
+        Import-Module WebAdministration
+        if (Test-Path "IIS:\Sites\Thematrixapi") {
+          Write-Host "Stopping IIS site..."
+          Stop-Website -Name "Thematrixapi"
+        }
+
+    - name: Deploy to IIS using Web Deploy
+      shell: pwsh
+      run: |
+        Write-Host "Starting deployment via Web Deploy..."
+        & "C:\Program Files\IIS\Microsoft Web Deploy V3\msdeploy.exe" `
+          -verb:sync `
+          -source:contentPath="${{ github.workspace }}\output" `
+          -dest:contentPath="Thematrixapi",computerName="${{ secrets.DEPLOY_SERVER }}",userName="${{ secrets.DEPLOY_USER }}",password="${{ secrets.DEPLOY_PASS }}",authType=Basic `
           -allowUntrusted
+        Write-Host "Deployment finished."
+
+    - name: Start IIS site
+      shell: pwsh
+      run: |
+        Import-Module WebAdministration
+        if (Test-Path "IIS:\Sites\Thematrixapi") {
+          Write-Host "Starting IIS site..."
+          Start-Website -Name "Thematrixapi"
+        }
