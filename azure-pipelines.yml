@@ -1,56 +1,17 @@
 trigger:
-- master   # Runs on push to master branch
+- master   # or main
 
 pool:
   vmImage: 'windows-latest'
 
-variables:
-  solution: 'E-Learning.sln'
-  buildPlatform: 'Any CPU'
-  buildConfiguration: 'Release'
-
 steps:
-# Install NuGet
-- task: NuGetToolInstaller@1
-
-# Restore NuGet packages
-- task: NuGetCommand@2
+- task: IISWebAppManagementOnMachineGroup@0
   inputs:
-    restoreSolution: '$(solution)'
-
-# Build and create WebDeploy package
-- task: VSBuild@1
-  inputs:
-    solution: '$(solution)'
-    msbuildArgs: >
-      /p:DeployOnBuild=true
-      /p:WebPublishMethod=Package
-      /p:PackageAsSingleFile=true
-      /p:SkipInvalidConfigurations=true
-      /p:PackageLocation="$(build.artifactStagingDirectory)"
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-
-# Run tests
-- task: VSTest@2
-  inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-
-# Publish artifacts (the generated deploy package)
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(build.artifactStagingDirectory)'
-    ArtifactName: 'drop'
-    publishLocation: 'Container'
-
-# Deploy to IIS using WebDeploy
-- task: IISWebAppDeploymentOnMachineGroup@0
-  inputs:
-    WebSiteName: 'E-Learning.API'
-    Package: '$(Pipeline.Workspace)/drop/*.zip'
-    RemoveAdditionalFilesFlag: true
-    TakeAppOfflineFlag: true
-    XmlVariableSubstitution: true
-    # The following must be set in your Azure DevOps service connection
-    # ConnectedServiceName: '<Name of service connection to your IIS server>'
+    IISDeploymentType: 'IISWebsite'
+    ActionIISWebsite: 'CreateOrUpdateWebsite'
+    WebsiteName: 'Thematrixapi'
+    WebsitePhysicalPath: 'C:\inetpub\wwwroot\Thematrixapi'
+    WebsitePhysicalPathAuth: 'WebsiteWindowsAuth'
+    WebsiteAuthUserName: 'admin'
+    WebsiteAuthUserPassword: '$(WebsiteAuthPassword)'  # use secret variable
+    ConfigureAuthenticationForWebsite: true
