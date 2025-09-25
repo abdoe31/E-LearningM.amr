@@ -1,49 +1,55 @@
-name: Deploy ASP.NET to IIS
+name: Build and Deploy ASP.NET to IIS
 
 on:
   push:
     branches:
       - master
-  workflow_dispatch:   # allows manual run
+  workflow_dispatch:
+
+env:
+  DOTNET_VERSION: '8.0.x'
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: windows-latest
-
     steps:
+
     # 1️⃣ Checkout code
     - name: Checkout code
       uses: actions/checkout@v3
 
     # 2️⃣ Setup .NET
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '8.0.x'
+        dotnet-version: ${{ env.DOTNET_VERSION }}
 
     # 3️⃣ Restore dependencies
     - name: Restore dependencies
-      run: dotnet restore E-Learning.API/E-Learning.API.csproj
+      working-directory: 'E-Learning.API'
+      run: dotnet restore
 
-    # 4️⃣ Build and publish the project
-    - name: Build and publish
-      run: |
-        dotnet build E-Learning.API/E-Learning.API.csproj -c Release --no-restore
-        dotnet publish E-Learning.API/E-Learning.API.csproj -c Release -o "${{ github.workspace }}\publish" --no-build
+    # 4️⃣ Build the project
+    - name: Build
+      working-directory: 'E-Learning.API'
+      run: dotnet build --configuration Release --no-restore
 
-    # 5️⃣ Verify the publish output exists
-    - name: Verify published files
-      run: |
-        if (-not (Test-Path "${{ github.workspace }}\publish")) { throw "Publish output not found" }
-        Get-ChildItem "${{ github.workspace }}\publish" | Out-Host
+    # 5️⃣ Publish to a folder
+    - name: Publish
+      working-directory: 'E-Learning.API'
+      run: dotnet publish --configuration Release --output 'publish'
 
-    # 6️⃣ Deploy to IIS using simply-web-deploy
-    - name: Web Deploy For Windows
-      uses: showardELB/simply-web-deploy@1.1.1
+    # 6️⃣ Verify publish folder exists
+    - name: List published files
+      run: dir E-Learning.API\publish
+
+    # 7️⃣ Deploy to IIS
+    - name: Deploy to IIS
+      uses: RasmusBuchholdt/simply-web-deploy@2.0.0
       with:
-        website-name: "Thematrixapi"
-        server-computer-name: "https://107.161.168.33:8172/msdeploy.axd"
-        server-username: "admin"
-        server-password: "Abdomatrixsak@123"
-        source-path: "${{ github.workspace }}\\publish"
+        website-name: 'Thematrixapi'
+        server-computer-name: 'https://107.161.168.33:8172/msdeploy.axd'
+        server-username: 'admin'
+        server-password: 'Abdomatrixsak@123'
+        source-path: '/IISAutoDeploy/dotnetcorewebapp/'
         target-delete: true
