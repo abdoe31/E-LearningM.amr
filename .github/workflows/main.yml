@@ -9,13 +9,22 @@ on:
 jobs:
   deploy:
     runs-on: windows-latest
+
     steps:
+    # 1️⃣ Checkout code
     - name: Checkout code
       uses: actions/checkout@v3
 
+    # 2️⃣ Build and publish the project
     - name: Build and publish
-      run: dotnet publish E-Learning.API/E-Learning.API.csproj -c Release -o ${{ github.workspace }}\output
+      run: |
+        dotnet publish E-Learning.API/E-Learning.API.csproj -c Release -o E-Learning.API/output
 
+    # 3️⃣ Verify the publish output exists
+    - name: List published files
+      run: dir E-Learning.API\output
+
+    # 4️⃣ Deploy to IIS using simply-web-deploy
     - name: Web Deploy For Windows
       uses: showardELB/simply-web-deploy@1.1.1
       with:
@@ -23,5 +32,5 @@ jobs:
         server-computer-name: "https://107.161.168.33:8172/msdeploy.axd"
         server-username: "admin"
         server-password: "Abdomatrixsak@123"
-        source-path: "${{ github.workspace }}\\output"
+        source-path: "E-Learning.API/output"   # relative path, do NOT use github.workspace
         target-delete: true
