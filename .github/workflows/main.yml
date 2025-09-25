@@ -31,17 +31,17 @@ jobs:
     # 4️⃣ Restore dependencies
     - name: Restore dependencies
       working-directory: 'E-Learning.API'  # folder containing IISAutoDeploy.csproj
-      run: dotnet restore IISAutoDeploy.csproj
+      run: dotnet restore E-Learning.API.csproj
 
     # 5️⃣ Build the project
     - name: Build
       working-directory: 'E-Learning.API'
-      run: dotnet build IISAutoDeploy.csproj --configuration Release --no-restore
+      run: dotnet build E-Learning.API.csproj --configuration Release --no-restore
 
     # 6️⃣ Publish to a folder
     - name: Publish
       working-directory: 'E-Learning.API'
-      run: dotnet publish IISAutoDeploy.csproj --configuration Release --output 'publish'
+      run: dotnet publish E-Learning.API.csproj --configuration Release --output 'publish'
 
     # 7️⃣ Verify publish folder exists
     - name: List published files
