@@ -1,61 +1,26 @@
-name: Build and Deploy to IIS
+name: Deploy ASP.NET to IIS
 
 on:
   push:
     branches:
       - master
-  workflow_dispatch:
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: windows-latest
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '6.x'
-
-    - name: Publish project
+    - name: Build and publish
       run: dotnet publish E-Learning.API/E-Learning.API.csproj -c Release -o ${{ github.workspace }}\output
 
-    - name: Stop IIS site
-      shell: pwsh
-      run: |
-        Import-Module WebAdministration
-        if (Test-Path "IIS:\Sites\Thematrixapi") {
-          Write-Host "Stopping IIS site..."
-          Stop-Website -Name "Thematrixapi"
-        }
-
-    - name: Deploy to IIS using Web Deploy
-      shell: pwsh
-      env:
-        DEPLOY_SERVER: ${{ secrets.DEPLOY_SERVER }}
-        DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
-        DEPLOY_PASS: ${{ secrets.DEPLOY_PASS }}
-      run: |
-        $siteName   = "Thematrixapi"
-        $outputPath = "${{ github.workspace }}\output"
-
-        # Properly-quoted -dest string
-        $destArg = "contentPath=`"$siteName`",computerName=`"$env:DEPLOY_SERVER`",userName=`"$env:DEPLOY_USER`",password=`"$env:DEPLOY_PASS`",authType=`"Basic`""
-
-        Write-Host "Starting deployment via Web Deploy..."
-        & "C:\Program Files\IIS\Microsoft Web Deploy V3\msdeploy.exe" `
-          -verb:sync `
-          -source:contentPath="$outputPath" `
-          -dest $destArg `
-          -allowUntrusted
-        Write-Host "Deployment finished."
-
-    - name: Start IIS site
-      shell: pwsh
-      run: |
-        Import-Module WebAdministration
-        if (Test-Path "IIS:\Sites\Thematrixapi") {
-          Write-Host "Starting IIS site..."
-          Start-Website -Name "Thematrixapi"
-        }
+    - name: Web Deploy For Windows
+      uses: showardELB/simply-web-deploy@1.1.1
+      with:
+        website-name: "Thematrixapi"
+        server-computer-name: ${{ secrets.DEPLOY_SERVER }}
+        server-username: ${{ secrets.DEPLOY_USER }}
+        server-password: ${{ secrets.DEPLOY_PASS }}
+        source-path: "${{ github.workspace }}/output"
+        target-delete: true
