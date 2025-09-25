@@ -1,0 +1,29 @@
+name: Build and Deploy to IIS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: windows-latest   # GitHub-hosted runner (free)
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '6.x'
+
+    - name: Publish project
+      run: dotnet publish E-Learning.API/E-Learning.API.csproj -c Release -o ${{ github.workspace }}\output
+
+    - name: Deploy to IIS using Web Deploy
+      run: |
+        "C:\Program Files\IIS\Microsoft Web Deploy V3\msdeploy.exe" ^
+          -verb:sync ^
+          -source:contentPath="${{ github.workspace }}\output" ^
+          -dest:contentPath="Thematrixapi",computerName="${{ secrets.DEPLOY_SERVER }}",userName="${{ secrets.DEPLOY_USER }}",password="${{ secrets.DEPLOY_PASS }}",authType=Basic ^
+          -allowUntrusted
