@@ -1,7 +1,5 @@
 name: Build and Deploy to IIS
 
-
-
 on:
   push:
     branches:
@@ -42,19 +40,14 @@ jobs:
         $siteName   = "Thematrixapi"
         $outputPath = "${{ github.workspace }}\output"
 
-        $destArgs = @{
-            contentPath  = $siteName
-            computerName = $env:DEPLOY_SERVER
-            userName     = $env:DEPLOY_USER
-            password     = $env:DEPLOY_PASS
-            authType     = "Basic"
-        }
+        # Properly-quoted -dest string
+        $destArg = "contentPath=`"$siteName`",computerName=`"$env:DEPLOY_SERVER`",userName=`"$env:DEPLOY_USER`",password=`"$env:DEPLOY_PASS`",authType=`"Basic`""
 
         Write-Host "Starting deployment via Web Deploy..."
         & "C:\Program Files\IIS\Microsoft Web Deploy V3\msdeploy.exe" `
           -verb:sync `
           -source:contentPath="$outputPath" `
-          -dest @destArgs `
+          -dest $destArg `
           -allowUntrusted
         Write-Host "Deployment finished."
 
