@@ -29,13 +29,13 @@ jobs:
     - name: Build and publish
       run: |
         dotnet build E-Learning.API/E-Learning.API.csproj -c Release --no-restore
-        dotnet publish E-Learning.API/E-Learning.API.csproj -c Release -o "${{ github.workspace }}\E-Learning.API\output" --no-build
+        dotnet publish E-Learning.API/E-Learning.API.csproj -c Release -o "${{ github.workspace }}\publish" --no-build
 
     # 5️⃣ Verify the publish output exists
     - name: Verify published files
       run: |
-        if (-not (Test-Path "${{ github.workspace }}\E-Learning.API\output")) { throw "Publish output not found" }
-        Get-ChildItem "${{ github.workspace }}\E-Learning.API\output" | Out-Host
+        if (-not (Test-Path "${{ github.workspace }}\publish")) { throw "Publish output not found" }
+        Get-ChildItem "${{ github.workspace }}\publish" | Out-Host
 
     # 6️⃣ Deploy to IIS using simply-web-deploy
     - name: Web Deploy For Windows
@@ -45,5 +45,5 @@ jobs:
         server-computer-name: "https://107.161.168.33:8172/msdeploy.axd"
         server-username: "admin"
         server-password: "Abdomatrixsak@123"
-        package_path: "${{ github.workspace }}\\E-Learning.API\\output"
+        source-path: "${{ github.workspace }}\\publish"
         target-delete: true
