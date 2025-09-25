@@ -1,36 +1,44 @@
-name: Deploy ASP.NET to IIS
+name: CI-CD
 
 on:
   push:
-    branches:
-      - master
-  workflow_dispatch:   # allows manual run
+    branches: [ master ]
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: windows-latest
 
     steps:
-    # 1️⃣ Checkout code
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    # 2️⃣ Build and publish the project
-    - name: Build and publish
-      run: |
-        dotnet publish E-Learning.API/E-Learning.API.csproj -c Release -o E-Learning.API/output
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
 
-    # 3️⃣ Verify the publish output exists
-    - name: List published files
-      run: dir E-Learning.API\output
+      - name: Restore
+        run: dotnet restore ./E-Learning.API/E-Learning.API.csproj
+        shell: pwsh
 
-    # 4️⃣ Deploy to IIS using simply-web-deploy
-    - name: Web Deploy For Windows
-      uses: showardELB/simply-web-deploy@1.1.1
-      with:
-        website-name: "Thematrixapi"
-        server-computer-name: "https://107.161.168.33:8172/msdeploy.axd"
-        server-username: "admin"
-        server-password: "Abdomatrixsak@123"
-        source-path: "E-Learning.API/output"   # relative path, do NOT use github.workspace
-        target-delete: true
+      - name: Publish
+        run: dotnet publish ./E-Learning.API/E-Learning.API.csproj -c Release -o "${{ github.workspace }}\E-Learning.API\output"
+        shell: pwsh
+
+      - name: Verify publish output exists
+        run: |
+          if (-not (Test-Path "${{ github.workspace }}\E-Learning.API\output")) {
+            throw "Publish output folder not found"
+          }
+          Get-ChildItem "${{ github.workspace }}\E-Learning.API\output" | Out-Host
+        shell: pwsh
+
+      - name: Deploy to IIS
+        uses: showardELB/simply-web-deploy@1.1.1
+        with:
+          website_name: Thematrixapi
+          package_path: "${{ github.workspace }}\\E-Learning.API\\output"
+          server: "https://107.161.168.33:8172/msdeploy.axd"
+          username: "admin"
+          password: "Abdomatrixsak@123"
+          stop_start_app_pool: true
