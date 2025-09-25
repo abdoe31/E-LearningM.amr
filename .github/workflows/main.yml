@@ -1,10 +1,12 @@
 name: Build and Deploy to IIS
 
+
+
 on:
   push:
     branches:
-      - main
-  workflow_dispatch:   # allows manual run
+      - master
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
@@ -39,11 +41,20 @@ jobs:
       run: |
         $siteName   = "Thematrixapi"
         $outputPath = "${{ github.workspace }}\output"
+
+        $destArgs = @{
+            contentPath  = $siteName
+            computerName = $env:DEPLOY_SERVER
+            userName     = $env:DEPLOY_USER
+            password     = $env:DEPLOY_PASS
+            authType     = "Basic"
+        }
+
         Write-Host "Starting deployment via Web Deploy..."
         & "C:\Program Files\IIS\Microsoft Web Deploy V3\msdeploy.exe" `
           -verb:sync `
           -source:contentPath="$outputPath" `
-          -dest:contentPath="$siteName",computerName="$env:DEPLOY_SERVER",userName="$env:DEPLOY_USER",password="$env:DEPLOY_PASS",authType="Basic" `
+          -dest @destArgs `
           -allowUntrusted
         Write-Host "Deployment finished."
 
