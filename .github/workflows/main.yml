@@ -24,26 +24,30 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    # 3️⃣ Restore dependencies
+    # 3️⃣ List repo root for debugging folder structure
+    - name: List repo root
+      run: dir
+
+    # 4️⃣ Restore dependencies
     - name: Restore dependencies
-      working-directory: 'IISAutoDeploy'
+      working-directory: 'E-Learning.API/IISAutoDeploy'   # <-- set to the folder containing your .csproj
       run: dotnet restore
 
-    # 4️⃣ Build the project
+    # 5️⃣ Build the project
     - name: Build
-      working-directory: 'IISAutoDeploy'
+      working-directory: 'E-Learning.API/IISAutoDeploy'
       run: dotnet build --configuration Release --no-restore
 
-    # 5️⃣ Publish to a folder
+    # 6️⃣ Publish to a folder
     - name: Publish
-      working-directory: 'IISAutoDeploy'
-      run: dotnet publish --configuration Release --output 'dotnetcorewebapp'
+      working-directory: 'E-Learning.API/IISAutoDeploy'
+      run: dotnet publish --configuration Release --output 'publish'
 
-    # 6️⃣ Verify publish folder exists
+    # 7️⃣ Verify publish folder exists
     - name: List published files
-      run: dir IISAutoDeploy\dotnetcorewebapp
+      run: dir E-Learning.API\IISAutoDeploy\publish
 
-    # 7️⃣ Deploy to IIS
+    # 8️⃣ Deploy to IIS
     - name: Deploy to IIS
       uses: RasmusBuchholdt/simply-web-deploy@2.0.0
       with:
@@ -51,5 +55,5 @@ jobs:
         server-computer-name: 'https://107.161.168.33:8172/msdeploy.axd'
         server-username: 'admin'
         server-password: 'Abdomatrixsak@123'
-        source-path: 'IISAutoDeploy/dotnetcorewebapp'   # relative path to repo root
+        source-path: 'E-Learning.API/IISAutoDeploy/publish'   # relative path to repo root
         target-delete: true
