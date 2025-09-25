@@ -32,12 +32,18 @@ jobs:
 
     - name: Deploy to IIS using Web Deploy
       shell: pwsh
+      env:
+        DEPLOY_SERVER: ${{ secrets.DEPLOY_SERVER }}
+        DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+        DEPLOY_PASS: ${{ secrets.DEPLOY_PASS }}
       run: |
+        $siteName   = "Thematrixapi"
+        $outputPath = "${{ github.workspace }}\output"
         Write-Host "Starting deployment via Web Deploy..."
         & "C:\Program Files\IIS\Microsoft Web Deploy V3\msdeploy.exe" `
           -verb:sync `
-          -source:contentPath="${{ github.workspace }}\output" `
-          -dest:contentPath="Thematrixapi",computerName="${{ secrets.DEPLOY_SERVER }}",userName="${{ secrets.DEPLOY_USER }}",password="${{ secrets.DEPLOY_PASS }}",authType=Basic `
+          -source:contentPath="$outputPath" `
+          -dest:contentPath="$siteName",computerName="$env:DEPLOY_SERVER",userName="$env:DEPLOY_USER",password="$env:DEPLOY_PASS",authType="Basic" `
           -allowUntrusted
         Write-Host "Deployment finished."
 
