@@ -20,8 +20,8 @@ jobs:
       uses: showardELB/simply-web-deploy@1.1.1
       with:
         website-name: "Thematrixapi"
-        server-computer-name: "http://107.161.168.33:8172/msdeploy.axd"
+        server-computer-name: "https://107.161.168.33:8172/msdeploy.axd"
         server-username: "admin"
         server-password: "Abdomatrixsak@123"
-        source-path: "${{ github.workspace }}/output"
+        source-path: "E-LearningM.amr/E-LearningM.amr/output"
         target-delete: true
