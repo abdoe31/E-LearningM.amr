@@ -25,6 +25,7 @@ namespace E_Learning.API.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
+        //asdasdasd
         private readonly IUserManger _UserManger;
         private readonly IUnitOfWork _UnitOfWork;
         private readonly UserManager<User> _userManager;
