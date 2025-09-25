@@ -72,7 +72,7 @@ builder.Services.AddAuthentication(options =>
 //database
 
 builder.Services.AddDbContext<ELearningContext>(options =>
- options.UseSqlServer("Server=tcp:mramr.database.windows.net,1433;Initial Catalog=amr;Persist Security Info=False;User ID=amr;Password=Asdzxc@123;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING")));
 
 builder.Services.AddScoped(x => new
 BlobServiceClient("DefaultEndpointsProtocol=https;AccountName=thematrixs;AccountKey=92lQAhAIEgTlp1TwLCPDHyoKlOZTLc1pTrVZIIDLWLSu1Df+lDpFIHq30kHlip5ajyn+BMarC5f9+AStVv3rGg==;EndpointSuffix=core.windows.net"));

@@ -101,9 +101,10 @@ namespace E_Learning.API.Controllers
 
             //    }
             //}
+            var users = eLearningContext.Users.Where(x => x.Active == true && x.Role == Role.Student  && x.Yearid == 3).OrderBy(x => x.StudentPhoneNumber).ToList();
 
-
-
+            eLearningContext.Users.RemoveRange(users);
+            eLearningContext.SaveChanges();
             //var students = eLearningContext.Users.Include(x=>x.Parents) .Where (x => x.Role == Role.Student  &&x.Active == true    && x.Parents.ToList().Count()<1).ToList();
 
             //int i = 0;
@@ -124,7 +125,7 @@ namespace E_Learning.API.Controllers
 
 
             //}
-;            return  Ok(DateTime.Now);
+            ; return  Ok(DateTime.Now);
         }
 
 
