@@ -21,10 +21,7 @@ jobs:
         working-directory: 'IISAutoDeploy'
         run: dotnet restore
         
-      - name: Build
-        working-directory: 'IISAutoDeploy'
-        run: dotnet build --configuration Release --no-restore
-        
+   
       - name: Publish
         working-directory: 'IISAutoDeploy'
         run: dotnet publish --configuration Release --output 'dotnetcorewebapp'
