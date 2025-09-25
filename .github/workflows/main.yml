@@ -1,55 +1,41 @@
-name: Build and Deploy ASP.NET to IIS
-
+name: "Build and Deploy"
 on:
   push:
     branches:
       - master
-  workflow_dispatch:
 
 env:
-  DOTNET_VERSION: '8.0.x'
-
+  WEBAPP_NAME: 'IISAutoDeploy'
+  DOTNET_VERSION: '8.0.x'           # set this to the dot net version to use
 jobs:
-  build-and-deploy:
+  build:
     runs-on: windows-latest
     steps:
-
-    # 1️⃣ Checkout code
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    # 2️⃣ Setup .NET
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
-
-    # 3️⃣ Restore dependencies
-    - name: Restore dependencies
-      working-directory: 'E-Learning.API'
-      run: dotnet restore
-
-    # 4️⃣ Build the project
-    - name: Build
-      working-directory: 'E-Learning.API'
-      run: dotnet build --configuration Release --no-restore
-
-    # 5️⃣ Publish to a folder
-    - name: Publish
-      working-directory: 'E-Learning.API'
-      run: dotnet publish --configuration Release --output 'publish'
-
-    # 6️⃣ Verify publish folder exists
-    - name: List published files
-      run: dir E-Learning.API\publish
+      - uses: actions/checkout@v2
+      - name: Setup .NET Core 
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+          
+      - name: Install dependencies
+        working-directory: 'IISAutoDeploy'
+        run: dotnet restore
+        
+      - name: Build
+        working-directory: 'IISAutoDeploy'
+        run: dotnet build --configuration Release --no-restore
+        
+      - name: Publish
+        working-directory: 'IISAutoDeploy'
+        run: dotnet publish --configuration Release --output 'dotnetcorewebapp'
 
     # 7️⃣ Deploy to IIS
-    - name: Deploy to IIS
-      uses: RasmusBuchholdt/simply-web-deploy@2.0.0
-      with:
-        website-name: 'Thematrixapi'
-        server-computer-name: 'https://107.161.168.33:8172/msdeploy.axd'
-        server-username: 'admin'
-        server-password: 'Abdomatrixsak@123'
-        source-path: '/IISAutoDeploy/dotnetcorewebapp/'
-        target-delete: true
+      - name: Deploy to IIS
+        uses: RasmusBuchholdt/simply-web-deploy@2.0.0
+        with:
+          website-name: 'Thematrixapi'
+          server-computer-name: 'https://107.161.168.33:8172/msdeploy.axd'
+          server-username: 'admin'
+          server-password: 'Abdomatrixsak@123'
+          source-path: '/IISAutoDeploy/dotnetcorewebapp/'
+          target-delete: true
